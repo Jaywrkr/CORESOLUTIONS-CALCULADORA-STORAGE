@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,6 +7,7 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  /* ── Dark theme (default) ── */
   :root {
     --blue:       #0057B8;
     --blue-light: #1a7fe8;
@@ -23,7 +24,28 @@
     --green:      #00c896;
     --amber:      #f59e0b;
     --font:       'Courier New', Courier, monospace;
+    --scanline:   rgba(0,0,0,0.04);
+    --toggle-bg:  #1a1a1a;
   }
+
+  /* ── Light theme ── */
+  [data-theme="light"] {
+    --bg:       #f2f2f2;
+    --surface:  #ffffff;
+    --surface2: #f7f7f7;
+    --surface3: #ebebeb;
+    --border:   #d4d4d4;
+    --border2:  #c8c8c8;
+    --text:     #0a0a0a;
+    --text-dim: #666666;
+    --text-mid: #333333;
+    --scanline: rgba(0,0,0,0.015);
+    --toggle-bg:#e0e0e0;
+  }
+  [data-theme="light"] .logo-text { color: #0a0a0a; }
+  [data-theme="light"] .header-badge { background: #fff; }
+  [data-theme="light"] .result-card { box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  [data-theme="light"] .sidebar-panel { box-shadow: 2px 0 16px rgba(0,0,0,0.06); }
 
   html { scroll-behavior: smooth; }
 
@@ -36,31 +58,33 @@
     flex-direction: column;
     align-items: center;
     padding: 0 16px 60px;
+    transition: background 0.3s, color 0.3s;
   }
 
   /* ── Print ── */
   @media print {
-    body { background: #fff; color: #000; padding: 0; }
+    body { background: #fff !important; color: #000 !important; padding: 0; }
     .no-print { display: none !important; }
     .print-only { display: block !important; }
-    #wizard-container, #progress-wrap { display: none !important; }
+    #wizard-layout, #progress-wrap { display: none !important; }
     #results-section { display: block !important; max-width: 100%; }
-    .result-card { border: 1px solid #ccc; page-break-inside: avoid; }
+    .result-card { border: 1px solid #ccc !important; page-break-inside: avoid; box-shadow: none !important; }
     .badge { border: 1px solid #000 !important; }
-    .spec-item { border: 1px solid #ddd; }
-    .projection-band { border: 1px solid #ccc; }
-    .summary-section { border: 1px solid #ccc; }
+    .spec-item { border: 1px solid #ddd !important; background: #fafafa !important; }
+    .projection-band, .summary-section, .results-client-band { border: 1px solid #ccc !important; background: #fafafa !important; }
     .card-why, .spec-val, .summary-val, .proj-value { color: #000 !important; }
     .card-rank, .card-model, .spec-key, .summary-key,
     .proj-label, .card-section-label, .results-title { color: #555 !important; }
     .print-client-header { display: block !important; }
+    .fit-bar-wrap { display: none !important; }
+    .context-tags { display: none !important; }
   }
   .print-only { display: none; }
   .print-client-header { display: none; }
 
   /* ── Header ── */
   header {
-    width: 100%; max-width: 880px;
+    width: 100%; max-width: 1160px;
     display: flex; align-items: center; justify-content: space-between;
     padding: 28px 0 24px; border-bottom: 1px solid var(--border2);
     margin-bottom: 36px; flex-wrap: wrap; gap: 12px;
@@ -70,19 +94,84 @@
     width: 38px; height: 38px; background: var(--blue);
     display: flex; align-items: center; justify-content: center;
     clip-path: polygon(0 0,85% 0,100% 15%,100% 100%,15% 100%,0 85%);
+    flex-shrink: 0;
   }
   .logo-icon svg { width: 22px; height: 22px; fill: white; }
-  .logo-text { font-size: 18px; font-weight: 700; letter-spacing: 0.18em; }
+  .logo-text { font-size: 18px; font-weight: 700; letter-spacing: 0.18em; color: var(--text); }
   .logo-text span { color: var(--blue-light); }
-  .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+
+  .header-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: flex-end; }
+  .header-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
   .header-badge {
     font-size: 10px; letter-spacing: 0.12em; color: var(--text-dim);
     border: 1px solid var(--border2); padding: 4px 10px; text-transform: uppercase;
   }
   .header-ibm { font-size: 9px; letter-spacing: 0.1em; color: var(--blue-light); text-transform: uppercase; opacity: 0.7; }
 
-  /* ── App ── */
-  #app { width: 100%; max-width: 880px; }
+  /* ── Theme toggle ── */
+  .theme-toggle {
+    background: var(--toggle-bg); border: 1px solid var(--border2);
+    width: 44px; height: 24px; border-radius: 12px;
+    cursor: pointer; position: relative; transition: background 0.3s, border-color 0.3s;
+    flex-shrink: 0;
+  }
+  .theme-toggle::after {
+    content: '';
+    position: absolute; top: 3px; left: 3px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--text-dim);
+    transition: transform 0.3s, background 0.3s;
+  }
+  [data-theme="light"] .theme-toggle::after { transform: translateX(20px); background: var(--blue); }
+  .theme-toggle-wrap { display: flex; align-items: center; gap: 8px; }
+  .theme-toggle-label { font-size: 10px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+
+  /* ── App container ── */
+  #app { width: 100%; max-width: 1160px; }
+
+  /* ── Wizard layout: main + sidebar ── */
+  #wizard-layout { display: flex; gap: 28px; align-items: flex-start; }
+  #wizard-main   { flex: 1; min-width: 0; max-width: 760px; }
+
+  /* ── Sidebar ── */
+  #wizard-sidebar {
+    width: 280px; flex-shrink: 0;
+    position: sticky; top: 24px; align-self: flex-start;
+    display: flex; flex-direction: column; gap: 0;
+  }
+  .sidebar-panel {
+    background: var(--surface); border: 1px solid var(--border2);
+    overflow: hidden;
+  }
+  .sidebar-header {
+    padding: 14px 18px 12px;
+    border-bottom: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .sidebar-title {
+    font-size: 9px; letter-spacing: 0.2em; color: var(--blue-light);
+    text-transform: uppercase;
+  }
+  .sidebar-step-count { font-size: 9px; color: var(--text-dim); letter-spacing: 0.1em; }
+  .sidebar-list { padding: 8px 0; }
+  .sb-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 18px; transition: background 0.15s;
+  }
+  .sb-item:hover { background: var(--surface2); }
+  .sb-dot {
+    width: 8px; height: 8px; flex-shrink: 0; margin-top: 4px;
+    border: 1px solid var(--border2);
+    clip-path: polygon(50% 0%,100% 50%,50% 100%,0% 50%);
+    transition: all 0.3s;
+  }
+  .sb-item.done .sb-dot   { background: var(--blue-dim); border-color: var(--blue-dim); }
+  .sb-item.active .sb-dot { background: var(--blue); border-color: var(--blue); }
+  .sb-content { flex: 1; min-width: 0; }
+  .sb-label { font-size: 9px; letter-spacing: 0.14em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 2px; }
+  .sb-value { font-size: 11px; color: var(--text-mid); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: color 0.3s; }
+  .sb-item.done .sb-value { color: var(--text); }
+  .sb-item.active .sb-value { color: var(--blue-light); }
 
   /* ── Progress ── */
   .progress-wrap { margin-bottom: 36px; }
@@ -109,7 +198,6 @@
   .step-card {
     background: var(--surface); border: 1px solid var(--border2);
     padding: 40px 44px; display: none;
-    animation: fadeSlide 0.35s ease forwards;
     position: relative; overflow: hidden;
   }
   .step-card.active { display: block; }
@@ -118,10 +206,11 @@
     background: linear-gradient(90deg, var(--blue), transparent);
   }
 
-  @keyframes fadeSlide {
-    from { opacity: 0; transform: translateX(18px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
+  /* ── Directional animations ── */
+  @keyframes slideInRight  { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes slideInLeft   { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: translateX(0); } }
+  .step-card.anim-fwd { animation: slideInRight 0.3s ease forwards; }
+  .step-card.anim-bwd { animation: slideInLeft  0.3s ease forwards; }
 
   .step-number   { font-size: 10px; letter-spacing: 0.2em; color: var(--blue-light); text-transform: uppercase; margin-bottom: 8px; }
   .step-title    { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 6px; letter-spacing: 0.04em; }
@@ -130,16 +219,19 @@
   /* ── Inputs ── */
   .field-group { margin-bottom: 24px; }
 
+  .field-label-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .field-label-row label { margin-bottom: 0; }
+
   label {
     display: block; font-size: 11px; letter-spacing: 0.14em;
-    color: var(--text-mid); text-transform: uppercase; margin-bottom: 10px;
+    color: var(--text-mid); text-transform: uppercase;
   }
 
   input[type="number"], input[type="text"] {
     width: 100%; background: var(--surface2); border: 1px solid var(--border2);
     color: var(--text); font-family: var(--font); font-size: 20px;
     padding: 14px 18px; outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.3s;
     -moz-appearance: textfield;
   }
   input[type="number"]::-webkit-inner-spin-button,
@@ -147,6 +239,33 @@
   input:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(0,87,184,0.18); }
   input::placeholder { color: var(--border2); }
   .input-hint { font-size: 10px; color: var(--text-dim); margin-top: 6px; letter-spacing: 0.08em; }
+
+  /* ── Tooltip ── */
+  .tooltip-btn {
+    width: 18px; height: 18px; flex-shrink: 0;
+    border: 1px solid var(--border2); background: transparent;
+    color: var(--text-dim); font-family: var(--font); font-size: 10px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.2s, color 0.2s; letter-spacing: 0;
+    text-transform: none;
+    position: relative;
+  }
+  .tooltip-btn:hover, .tooltip-btn.open { border-color: var(--blue-light); color: var(--blue-light); }
+
+  .tooltip-bubble {
+    display: none;
+    position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+    background: var(--surface3); border: 1px solid var(--blue-dim);
+    color: var(--text-mid); font-size: 11px; line-height: 1.6;
+    padding: 10px 14px; width: 260px; z-index: 100;
+    letter-spacing: 0.03em; text-transform: none; font-weight: normal;
+    pointer-events: none;
+  }
+  .tooltip-bubble::after {
+    content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    border: 6px solid transparent; border-top-color: var(--blue-dim);
+  }
+  .tooltip-btn.open .tooltip-bubble { display: block; }
 
   /* ── Checkbox grid ── */
   .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px,1fr)); gap: 10px; }
@@ -201,24 +320,21 @@
   .radio-card-desc  { font-size: 11px; color: var(--text-dim); letter-spacing: 0.06em; }
 
   /* ── IOPS cards ── */
-  .iops-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px,1fr)); gap: 10px; }
+  .iops-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 10px; }
   .iops-card { position: relative; }
   .iops-card input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
   .iops-card label {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 8px; background: var(--surface2); border: 1px solid var(--border2);
-    padding: 20px 14px; cursor: pointer; text-align: center;
+    gap: 6px; background: var(--surface2); border: 1px solid var(--border2);
+    padding: 20px 12px; cursor: pointer; text-align: center;
     transition: border-color 0.2s, background 0.2s;
-    color: var(--text-mid); margin: 0; user-select: none; min-height: 100px;
+    color: var(--text-mid); margin: 0; user-select: none; min-height: 96px;
   }
   .iops-card input:checked + label { border-color: var(--blue); background: rgba(0,87,184,0.1); color: var(--text); }
-  .iops-value {
-    font-size: 22px; font-weight: 700; color: var(--text-dim); letter-spacing: 0.04em;
-    transition: color 0.2s;
-  }
+  .iops-value { font-size: 20px; font-weight: 700; color: var(--text-dim); letter-spacing: 0.04em; transition: color 0.2s; }
   .iops-card input:checked + label .iops-value { color: var(--blue-light); }
   .iops-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
-  .iops-range { font-size: 10px; color: var(--text-dim); letter-spacing: 0.06em; margin-top: 2px; }
+  .iops-range { font-size: 10px; color: var(--text-dim); letter-spacing: 0.05em; margin-top: 2px; }
 
   /* ── Buttons ── */
   .nav-buttons { display: flex; justify-content: space-between; align-items: center; margin-top: 36px; gap: 12px; }
@@ -226,14 +342,15 @@
     font-family: var(--font); font-size: 12px; letter-spacing: 0.16em;
     text-transform: uppercase; padding: 14px 28px; border: 1px solid;
     cursor: pointer; transition: all 0.2s; outline: none; position: relative; overflow: hidden;
+    background: transparent;
   }
   .btn::after { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.05); opacity: 0; transition: opacity 0.2s; }
   .btn:hover::after { opacity: 1; }
   .btn-primary  { background: var(--blue); border-color: var(--blue); color: white; }
   .btn-primary:hover { background: var(--blue-light); border-color: var(--blue-light); }
-  .btn-secondary { background: transparent; border-color: var(--border2); color: var(--text-dim); }
+  .btn-secondary { border-color: var(--border2); color: var(--text-dim); }
   .btn-secondary:hover { border-color: var(--text-dim); color: var(--text); }
-  .btn-ghost { background: transparent; border-color: transparent; color: var(--text-dim); padding: 14px 0; }
+  .btn-ghost { border-color: transparent; color: var(--text-dim); padding: 14px 0; }
   .btn-ghost:hover { color: var(--text); }
   .btn-icon { margin-left: 8px; }
 
@@ -258,8 +375,8 @@
   .processing.show { display: block; }
 
   /* ── Results ── */
-  #results-section { width: 100%; max-width: 880px; display: none; }
-  #results-section.show { display: block; animation: fadeSlide 0.4s ease forwards; }
+  #results-section { width: 100%; max-width: 1160px; display: none; }
+  #results-section.show { display: block; animation: slideInRight 0.4s ease forwards; }
 
   .results-client-band {
     background: var(--surface2); border: 1px solid var(--border2);
@@ -301,7 +418,8 @@
   .result-card {
     background: var(--surface); border: 1px solid var(--border2);
     margin-bottom: 18px; position: relative; overflow: hidden;
-    opacity: 0; animation: fadeSlide 0.4s ease forwards;
+    opacity: 0; animation: slideInRight 0.4s ease forwards;
+    transition: border-color 0.2s;
   }
   .result-card:nth-child(1) { animation-delay: 0.05s; }
   .result-card:nth-child(2) { animation-delay: 0.18s; }
@@ -314,21 +432,30 @@
 
   .card-header {
     display: flex; align-items: flex-start; justify-content: space-between;
-    padding: 24px 28px 20px; border-bottom: 1px solid var(--border2);
-    gap: 12px; flex-wrap: wrap;
+    padding: 24px 28px 16px; border-bottom: 1px solid var(--border2);
+    gap: 16px; flex-wrap: wrap;
   }
   .card-title-group { flex: 1; }
   .card-rank  { font-size: 10px; letter-spacing: 0.16em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 4px; }
   .card-name  { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: 0.04em; }
   .card-model { font-size: 11px; color: var(--text-dim); margin-top: 2px; letter-spacing: 0.08em; }
 
+  .card-header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; flex-shrink: 0; }
+
   .badge {
     font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
-    padding: 6px 14px; font-weight: 700; white-space: nowrap; align-self: flex-start;
+    padding: 6px 14px; font-weight: 700; white-space: nowrap;
   }
   .badge-best     { background: var(--blue); color: white; }
   .badge-alt      { background: rgba(0,200,150,0.12); color: var(--green); border: 1px solid var(--green); }
   .badge-economic { background: rgba(245,158,11,0.12); color: var(--amber); border: 1px solid var(--amber); }
+
+  /* ── Fit bar ── */
+  .fit-bar-wrap { display: flex; align-items: center; gap: 8px; min-width: 130px; }
+  .fit-bar-label { font-size: 9px; letter-spacing: 0.12em; color: var(--text-dim); text-transform: uppercase; white-space: nowrap; }
+  .fit-track { flex: 1; height: 3px; background: var(--surface3); overflow: hidden; }
+  .fit-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--blue-light)); transition: width 0.8s ease; }
+  .fit-pct { font-size: 12px; font-weight: 700; color: var(--blue-light); letter-spacing: 0.06em; white-space: nowrap; }
 
   .card-body { padding: 22px 28px; }
   .card-section { margin-bottom: 22px; }
@@ -337,16 +464,27 @@
 
   /* ── Specs ── */
   .specs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px,1fr)); gap: 10px; }
-  .spec-item { background: var(--surface2); border: 1px solid var(--border2); padding: 12px 14px; }
+  .spec-item { background: var(--surface2); border: 1px solid var(--border2); padding: 12px 14px; transition: background 0.3s; }
   .spec-key  { font-size: 10px; letter-spacing: 0.12em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 4px; }
   .spec-val  { font-size: 13px; color: var(--text); font-weight: 600; letter-spacing: 0.04em; }
 
   /* ── Summary ── */
   .summary-section { background: var(--surface2); border: 1px solid var(--border2); padding: 22px 28px; margin-bottom: 28px; }
-  .summary-title { font-size: 10px; letter-spacing: 0.18em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 16px; }
-  .summary-grid  { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 14px; }
-  .summary-key   { font-size: 10px; letter-spacing: 0.12em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 3px; }
-  .summary-val   { font-size: 13px; color: var(--text); letter-spacing: 0.04em; }
+  .summary-header  { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .summary-title   { font-size: 10px; letter-spacing: 0.18em; color: var(--text-dim); text-transform: uppercase; }
+  .summary-grid    { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 14px; }
+  .summary-item    { position: relative; }
+  .summary-key     { font-size: 10px; letter-spacing: 0.12em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 3px; }
+  .summary-val     { font-size: 13px; color: var(--text); letter-spacing: 0.04em; }
+  .edit-btn {
+    position: absolute; top: 0; right: 0;
+    background: transparent; border: 1px solid var(--border2);
+    color: var(--text-dim); font-family: var(--font); font-size: 9px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 3px 7px; cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .edit-btn:hover { border-color: var(--blue-light); color: var(--blue-light); }
 
   /* ── Action bar ── */
   .action-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
@@ -354,11 +492,17 @@
   /* ── Scanline ── */
   body::after {
     content: ''; position: fixed; inset: 0;
-    background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px);
+    background: repeating-linear-gradient(0deg,transparent,transparent 2px,var(--scanline) 2px,var(--scanline) 4px);
     pointer-events: none; z-index: 9999;
   }
 
   /* ── Responsive ── */
+  @media (max-width: 960px) {
+    #wizard-sidebar { display: none; }
+    header { max-width: 880px; }
+    #app { max-width: 880px; }
+    #results-section { max-width: 880px; }
+  }
   @media (max-width: 620px) {
     .step-card { padding: 28px 20px; }
     .card-header { padding: 18px 18px 14px; }
@@ -369,10 +513,24 @@
     header { padding: 20px 0 18px; }
     .radio-cards-2col { grid-template-columns: 1fr; }
     .iops-grid { grid-template-columns: 1fr 1fr; }
+    .card-header-right { flex-direction: row; align-items: center; width: 100%; justify-content: space-between; }
+    .fit-bar-wrap { min-width: 100px; }
+    .tooltip-bubble { left: auto; right: 0; transform: none; }
+    .tooltip-bubble::after { left: auto; right: 12px; transform: none; }
   }
 </style>
 </head>
 <body>
+
+<!-- Print header -->
+<div class="print-only" style="padding:20px 0 16px;border-bottom:2px solid #000;margin-bottom:20px;width:100%;max-width:880px;">
+  <div style="font-size:20px;font-weight:700;letter-spacing:0.14em;">CORESOLUTIONS</div>
+  <div style="font-size:11px;color:#555;letter-spacing:0.08em;margin-top:4px;">IBM Storage Sizing Simulator — Recomendación Técnica</div>
+</div>
+<div class="print-client-header" style="width:100%;max-width:880px;margin-bottom:24px;padding:12px 18px;border:1px solid #ccc;">
+  <div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:3px;">Cliente / Oportunidad</div>
+  <div id="print-client-name" style="font-size:18px;font-weight:700;color:#000;"></div>
+</div>
 
 <!-- ── Header ── -->
 <header class="no-print">
@@ -383,429 +541,482 @@
     <div class="logo-text">CORE<span>SOLUTIONS</span></div>
   </div>
   <div class="header-right">
-    <div class="header-badge">IBM Storage Sizing Simulator</div>
-    <div class="header-ibm">&#9632; Portfolio IBM Storage exclusivo</div>
+    <div class="theme-toggle-wrap">
+      <span class="theme-toggle-label" id="theme-label">Oscuro</span>
+      <button class="theme-toggle no-print" onclick="toggleTheme()" aria-label="Cambiar tema"></button>
+    </div>
+    <div class="header-meta">
+      <div class="header-badge">IBM Storage Sizing Simulator</div>
+      <div class="header-ibm">&#9632; Portfolio IBM Storage exclusivo</div>
+    </div>
   </div>
 </header>
 
-<!-- Print header -->
-<div class="print-only" style="padding:20px 0 16px;border-bottom:2px solid #000;margin-bottom:20px;width:100%;max-width:880px;">
-  <div style="font-size:20px;font-weight:700;letter-spacing:0.14em;">CORESOLUTIONS</div>
-  <div style="font-size:11px;color:#555;letter-spacing:0.08em;margin-top:4px;">IBM Storage Sizing Simulator — Recomendación Técnica</div>
-</div>
-<!-- Client name for print -->
-<div class="print-client-header" style="width:100%;max-width:880px;margin-bottom:24px;padding:12px 18px;border:1px solid #ccc;">
-  <div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:3px;">Cliente / Oportunidad</div>
-  <div id="print-client-name" style="font-size:18px;font-weight:700;color:#000;"></div>
-</div>
-
 <div id="app">
 
-  <!-- ══════════════════ WIZARD ══════════════════ -->
-  <div id="wizard-container" class="no-print">
-
-    <div class="progress-wrap" id="progress-wrap">
-      <div class="progress-header">
-        <span class="progress-label">Progreso del análisis</span>
-        <span class="progress-counter" id="progress-counter">Paso 1 de 10</span>
-      </div>
-      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
-      <div class="steps-dots" id="steps-dots"></div>
+  <!-- ══════════════ WIZARD ══════════════ -->
+  <div id="progress-wrap" class="no-print">
+    <div class="progress-header">
+      <span class="progress-label">Progreso del análisis</span>
+      <span class="progress-counter" id="progress-counter">Paso 1 de 10</span>
     </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="steps-dots" id="steps-dots"></div>
+  </div>
 
-    <!-- ── Paso 1: Datos del cliente ── -->
-    <div class="step-card active" id="step-1">
-      <div class="corner-deco"></div>
-      <div class="step-number">Paso 01 / 10</div>
-      <div class="step-title">Datos del cliente</div>
-      <div class="step-subtitle">Identificación de la oportunidad y base del entorno</div>
+  <div id="wizard-layout" class="no-print">
 
-      <div class="field-group">
-        <label for="client-name">Nombre del cliente / oportunidad</label>
-        <input type="text" id="client-name" placeholder="ej. Banco Nacional S.A." maxlength="120" />
-        <div class="input-hint">&#9632; Aparecerá en el encabezado del PDF exportado</div>
-        <div class="error-msg" id="err-client">Ingresa el nombre del cliente o la oportunidad</div>
+    <!-- ── Main wizard ── -->
+    <div id="wizard-main">
+
+      <!-- Paso 1 -->
+      <div class="step-card active" id="step-1">
+        <div class="corner-deco"></div>
+        <div class="step-number">Paso 01 / 10</div>
+        <div class="step-title">Datos del cliente</div>
+        <div class="step-subtitle">Identificación de la oportunidad y base del entorno</div>
+
+        <div class="field-group">
+          <div class="field-label-row">
+            <label for="client-name">Nombre del cliente / oportunidad</label>
+            <button class="tooltip-btn" onclick="toggleTip(this)">?
+              <div class="tooltip-bubble">El nombre aparece en la banda superior de resultados y en el encabezado del PDF exportado, identificando la propuesta comercial.</div>
+            </button>
+          </div>
+          <input type="text" id="client-name" placeholder="ej. Banco Nacional S.A." maxlength="120" />
+          <div class="error-msg" id="err-client">Ingresa el nombre del cliente o la oportunidad</div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label-row">
+            <label for="num-servers">Número de servidores</label>
+            <button class="tooltip-btn" onclick="toggleTip(this)">?
+              <div class="tooltip-bubble">Incluye servidores físicos, VMs host y nodos de cluster que montarán el storage. No cuentes los guests/VMs individuales.</div>
+            </button>
+          </div>
+          <input type="number" id="num-servers" placeholder="ej. 12" min="1" max="9999" />
+          <div class="input-hint">&#9632; Servidores físicos o virtualizados que accederán al storage</div>
+          <div class="error-msg" id="err-servers">Ingresa un número válido mayor a 0</div>
+        </div>
+
+        <div class="nav-buttons">
+          <span></span>
+          <button class="btn btn-primary" onclick="nextStep(1)">Continuar <span class="btn-icon">›</span></button>
+        </div>
       </div>
 
-      <div class="field-group">
-        <label for="num-servers">Número de servidores</label>
-        <input type="number" id="num-servers" placeholder="ej. 12" min="1" max="9999" />
-        <div class="input-hint">&#9632; Servidores físicos o virtualizados que accederán al storage</div>
-        <div class="error-msg" id="err-servers">Ingresa un número válido mayor a 0</div>
+      <!-- Paso 2 -->
+      <div class="step-card" id="step-2">
+        <div class="corner-deco"></div>
+        <div class="step-number">Paso 02 / 10</div>
+        <div class="step-title">Volumen de datos</div>
+        <div class="step-subtitle">Capacidad actual que el cliente necesita gestionar</div>
+        <div class="field-group">
+          <div class="field-label-row">
+            <label for="current-tb">TB de datos actuales</label>
+            <button class="tooltip-btn" onclick="toggleTip(this)">?
+              <div class="tooltip-bubble">Suma los datos activos en producción + backups primarios en disco. No incluyas cintas, archivos históricos ni datos offline.</div>
+            </button>
+          </div>
+          <input type="number" id="current-tb" placeholder="ej. 50" min="0.1" max="999999" step="0.1" />
+          <div class="input-hint">&#9632; Total de terabytes en producción + backups activos que el cliente maneja hoy</div>
+          <div class="error-msg" id="err-tb">Ingresa un valor válido en TB</div>
+        </div>
+        <div class="nav-buttons">
+          <button class="btn btn-ghost" onclick="nextStep(2,'back')">‹ Atrás</button>
+          <button class="btn btn-primary" onclick="nextStep(2)">Continuar <span class="btn-icon">›</span></button>
+        </div>
       </div>
 
-      <div class="nav-buttons">
-        <span></span>
-        <button class="btn btn-primary" onclick="nextStep(1)">Continuar <span class="btn-icon">›</span></button>
+      <!-- Paso 3 -->
+      <div class="step-card" id="step-3">
+        <div class="corner-deco"></div>
+        <div class="step-number">Paso 03 / 10</div>
+        <div class="step-title">Proyección de crecimiento</div>
+        <div class="step-subtitle">Estimado anual de incremento en datos</div>
+        <div class="field-group">
+          <div class="field-label-row">
+            <label for="growth-pct">Crecimiento anual estimado (%)</label>
+            <button class="tooltip-btn" onclick="toggleTip(this)">?
+              <div class="tooltip-bubble">Si el cliente no tiene un dato exacto, 20–25% es conservador para la mayoría de organizaciones. Entornos con analytics o IoT suelen estar en 40–60%.</div>
+            </button>
+          </div>
+          <input type="number" id="growth-pct" placeholder="ej. 25" min="0" max="500" />
+          <div class="input-hint">&#9632; Porcentaje de crecimiento de datos año sobre año que el cliente estima</div>
+          <div class="error-msg" id="err-growth">Ingresa un porcentaje entre 0 y 500</div>
+        </div>
+        <div class="nav-buttons">
+          <button class="btn btn-ghost" onclick="prevStep(3)">‹ Atrás</button>
+          <button class="btn btn-primary" onclick="nextStep(3)">Continuar <span class="btn-icon">›</span></button>
+        </div>
       </div>
-    </div>
 
-    <!-- ── Paso 2: TB actuales ── -->
-    <div class="step-card" id="step-2">
-      <div class="corner-deco"></div>
-      <div class="step-number">Paso 02 / 10</div>
-      <div class="step-title">Volumen de datos</div>
-      <div class="step-subtitle">Capacidad actual que el cliente necesita gestionar</div>
-      <div class="field-group">
-        <label for="current-tb">TB de datos actuales</label>
-        <input type="number" id="current-tb" placeholder="ej. 50" min="0.1" max="999999" step="0.1" />
-        <div class="input-hint">&#9632; Total de terabytes en producción + backups activos que el cliente maneja hoy</div>
-        <div class="error-msg" id="err-tb">Ingresa un valor válido en TB</div>
+      <!-- Paso 4 -->
+      <div class="step-card" id="step-4">
+        <div class="corner-deco"></div>
+        <div class="step-number">Paso 04 / 10</div>
+        <div class="step-title">Tipo de carga principal</div>
+        <div class="step-subtitle">Selecciona todas las que apliquen al entorno del cliente</div>
+        <div class="checkbox-grid">
+          <div class="check-item">
+            <input type="checkbox" id="load-vms" value="vms" />
+            <label for="load-vms"><div class="check-box"></div><span class="check-icon">&#9707;</span> Máquinas Virtuales</label>
+          </div>
+          <div class="check-item">
+            <input type="checkbox" id="load-backup" value="backup" />
+            <label for="load-backup"><div class="check-box"></div><span class="check-icon">&#9781;</span> Backup / Respaldo</label>
+          </div>
+          <div class="check-item">
+            <input type="checkbox" id="load-files" value="files" />
+            <label for="load-files"><div class="check-box"></div><span class="check-icon">&#9636;</span> Archivos / NAS</label>
+          </div>
+          <div class="check-item">
+            <input type="checkbox" id="load-db" value="db" />
+            <label for="load-db"><div class="check-box"></div><span class="check-icon">&#9632;</span> Bases de Datos</label>
+          </div>
+        </div>
+        <div class="error-msg" id="err-load" style="margin-top:12px;">Selecciona al menos un tipo de carga</div>
+        <div class="nav-buttons">
+          <button class="btn btn-ghost" onclick="prevStep(4)">‹ Atrás</button>
+          <button class="btn btn-primary" onclick="nextStep(4)">Continuar <span class="btn-icon">›</span></button>
+        </div>
       </div>
-      <div class="nav-buttons">
-        <button class="btn btn-ghost" onclick="prevStep(2)">‹ Atrás</button>
-        <button class="btn btn-primary" onclick="nextStep(2)">Continuar <span class="btn-icon">›</span></button>
-      </div>
-    </div>
 
-    <!-- ── Paso 3: Crecimiento ── -->
-    <div class="step-card" id="step-3">
-      <div class="corner-deco"></div>
-      <div class="step-number">Paso 03 / 10</div>
-      <div class="step-title">Proyección de crecimiento</div>
-      <div class="step-subtitle">Estimado anual de incremento en datos</div>
-      <div class="field-group">
-        <label for="growth-pct">Crecimiento anual estimado (%)</label>
-        <input type="number" id="growth-pct" placeholder="ej. 25" min="0" max="500" />
-        <div class="input-hint">&#9632; Porcentaje de crecimiento de datos año sobre año que el cliente estima</div>
-        <div class="error-msg" id="err-growth">Ingresa un porcentaje entre 0 y 500</div>
+      <!-- Paso 5 -->
+      <div class="step-card" id="step-5">
+        <div class="corner-deco"></div>
+        <div class="step-number">Paso 05 / 10</div>
+        <div class="step-title">IOPS requeridas</div>
+        <div class="step-subtitle">
+          Intensidad de operaciones de I/O que el entorno demanda
+          <button class="tooltip-btn" onclick="toggleTip(this)" style="display:inline-flex;margin-left:8px;vertical-align:middle;">?
+            <div class="tooltip-bubble">Una DB Oracle transaccional típica: 50K–200K IOPS. ERP SAP en VMs: 10K–50K. Backup y archivos: por lo general &lt; 10K IOPS.</div>
+          </button>
+        </div>
+        <div class="iops-grid">
+          <div class="iops-card">
+            <input type="radio" name="iops" id="iops-low" value="low" />
+            <label for="iops-low">
+              <div class="iops-value">&lt; 10K</div>
+              <div class="iops-label">Baja</div>
+              <div class="iops-range">Backup, archivo, NAS general</div>
+            </label>
+          </div>
+          <div class="iops-card">
+            <input type="radio" name="iops" id="iops-medium" value="medium" />
+            <label for="iops-medium">
+              <div class="iops-value">10K–50K</div>
+              <div class="iops-label">Media</div>
+              <div class="iops-range">VMs de uso general, ERP</div>
+            </label>
+          </div>
+          <div class="iops-card">
+            <input type="radio" name="iops" id="iops-high" value="high" />
+            <label for="iops-high">
+              <div class="iops-value">50K–200K</div>
+              <div class="iops-label">Alta</div>
+              <div class="iops-range">DBs productivas, virt. densa</div>
+            </label>
+          </div>
+          <div class="iops-card">
+            <input type="radio" name="iops" id="iops-veryhigh" value="veryhigh" />
+            <label for="iops-veryhigh">
+              <div class="iops-value">&gt; 200K</div>
+              <div class="iops-label">Muy alta</div>
+              <div class="iops-range">DBs críticas, HPC, analytics RT</div>
+            </label>
+          </div>
+        </div>
+        <div class="error-msg" id="err-iops" style="margin-top:12px;">Selecciona el nivel de IOPS requerido</div>
+        <div class="nav-buttons">
+          <button class="btn btn-ghost" onclick="prevStep(5)">‹ Atrás</button>
+          <button class="btn btn-primary" onclick="nextStep(5)">Continuar <span class="btn-icon">›</span></button>
+        </div>
       </div>
-      <div class="nav-buttons">
-        <button class="btn btn-ghost" onclick="prevStep(3)">‹ Atrás</button>
-        <button class="btn btn-primary" onclick="nextStep(3)">Continuar <span class="btn-icon">›</span></button>
-      </div>
-    </div>
 
-    <!-- ── Paso 4: Tipo de carga ── -->
-    <div class="step-card" id="step-4">
-      <div class="corner-deco"></div>
-      <div class="step-number">Paso 04 / 10</div>
-      <div class="step-title">Tipo de carga principal</div>
-      <div class="step-subtitle">Selecciona todas las que apliquen al entorno del cliente</div>
-      <div class="checkbox-grid">
-        <div class="check-item">
-          <input type="checkbox" id="load-vms" value="vms" />
-          <label for="load-vms"><div class="check-box"></div><span class="check-icon">&#9707;</span> Máquinas Virtuales</label>
+      <!-- Paso 6 -->
+      <div class="step-card" id="step-6">
+        <div class="corner-deco"></div>
+        <div class="step-number">Paso 06 / 10</div>
+        <div class="step-title">Protocolo de conectividad</div>
+        <div class="step-subtitle">
+          Infraestructura de red de storage disponible o preferida
+          <button class="tooltip-btn" onclick="toggleTip(this)" style="display:inline-flex;margin-left:8px;vertical-align:middle;">?
+            <div class="tooltip-bubble">FC es la opción enterprise estándar. iSCSI si el cliente ya tiene switches Ethernet 10GbE+. NVMe-oF solo si tiene fabric RDMA (RoCE v2 o InfiniBand).</div>
+          </button>
         </div>
-        <div class="check-item">
-          <input type="checkbox" id="load-backup" value="backup" />
-          <label for="load-backup"><div class="check-box"></div><span class="check-icon">&#9781;</span> Backup / Respaldo</label>
+        <div class="radio-cards">
+          <div class="radio-card">
+            <input type="radio" name="protocol" id="proto-fc" value="fc" />
+            <label for="proto-fc">
+              <div class="radio-indicator"></div>
+              <div class="radio-card-content">
+                <div class="radio-card-title">Fibre Channel (FC)</div>
+                <div class="radio-card-desc">SAN dedicada, máxima performance y aislamiento — entornos enterprise con switches FC</div>
+              </div>
+            </label>
+          </div>
+          <div class="radio-card">
+            <input type="radio" name="protocol" id="proto-iscsi" value="iscsi" />
+            <label for="proto-iscsi">
+              <div class="radio-indicator"></div>
+              <div class="radio-card-content">
+                <div class="radio-card-title">iSCSI</div>
+                <div class="radio-card-desc">SAN sobre IP Ethernet — flexible, menor costo de infraestructura de red</div>
+              </div>
+            </label>
+          </div>
+          <div class="radio-card">
+            <input type="radio" name="protocol" id="proto-nvme" value="nvme" />
+            <label for="proto-nvme">
+              <div class="radio-indicator"></div>
+              <div class="radio-card-content">
+                <div class="radio-card-title">NVMe over Fabrics (NVMe-oF)</div>
+                <div class="radio-card-desc">Máximo throughput y mínima latencia — requiere fabric RDMA (RoCE o InfiniBand)</div>
+              </div>
+            </label>
+          </div>
+          <div class="radio-card">
+            <input type="radio" name="protocol" id="proto-any" value="any" />
+            <label for="proto-any">
+              <div class="radio-indicator"></div>
+              <div class="radio-card-content">
+                <div class="radio-card-title">Sin preferencia / A definir</div>
+                <div class="radio-card-desc">No está definido aún — el simulador considera todas las opciones del portfolio IBM</div>
+              </div>
+            </label>
+          </div>
         </div>
-        <div class="check-item">
-          <input type="checkbox" id="load-files" value="files" />
-          <label for="load-files"><div class="check-box"></div><span class="check-icon">&#9636;</span> Archivos / NAS</label>
-        </div>
-        <div class="check-item">
-          <input type="checkbox" id="load-db" value="db" />
-          <label for="load-db"><div class="check-box"></div><span class="check-icon">&#9632;</span> Bases de Datos</label>
+        <div class="error-msg" id="err-protocol" style="margin-top:12px;">Selecciona un protocolo</div>
+        <div class="nav-buttons">
+          <button class="btn btn-ghost" onclick="prevStep(6)">‹ Atrás</button>
+          <button class="btn btn-primary" onclick="nextStep(6)">Continuar <span class="btn-icon">›</span></button>
         </div>
       </div>
-      <div class="error-msg" id="err-load" style="margin-top:12px;">Selecciona al menos un tipo de carga</div>
-      <div class="nav-buttons">
-        <button class="btn btn-ghost" onclick="prevStep(4)">‹ Atrás</button>
-        <button class="btn btn-primary" onclick="nextStep(4)">Continuar <span class="btn-icon">›</span></button>
-      </div>
-    </div>
 
-    <!-- ── Paso 5: IOPS requeridas ── -->
-    <div class="step-card" id="step-5">
-      <div class="corner-deco"></div>
-      <div class="step-number">Paso 05 / 10</div>
-      <div class="step-title">IOPS requeridas</div>
-      <div class="step-subtitle">Intensidad de operaciones de entrada/salida que el entorno demanda</div>
-      <div class="iops-grid">
-        <div class="iops-card">
-          <input type="radio" name="iops" id="iops-low" value="low" />
-          <label for="iops-low">
-            <div class="iops-value">&lt; 10K</div>
-            <div class="iops-label">Baja</div>
-            <div class="iops-range">Backup, archivo, NAS general</div>
-          </label>
+      <!-- Paso 7 -->
+      <div class="step-card" id="step-7">
+        <div class="corner-deco"></div>
+        <div class="step-number">Paso 07 / 10</div>
+        <div class="step-title">Entorno de virtualización</div>
+        <div class="step-subtitle">
+          Plataforma de hipervisor o entorno de cómputo del cliente
+          <button class="tooltip-btn" onclick="toggleTip(this)" style="display:inline-flex;margin-left:8px;vertical-align:middle;">?
+            <div class="tooltip-bubble">VMware activa el IBM Storage Plugin para vCenter con VAAI y vVols — funciones que reducen carga en el host y aceleran operaciones de storage.</div>
+          </button>
         </div>
-        <div class="iops-card">
-          <input type="radio" name="iops" id="iops-medium" value="medium" />
-          <label for="iops-medium">
-            <div class="iops-value">10K–50K</div>
-            <div class="iops-label">Media</div>
-            <div class="iops-range">VMs de uso general, ERP</div>
-          </label>
+        <div class="radio-cards radio-cards-2col">
+          <div class="radio-card">
+            <input type="radio" name="hypervisor" id="hv-vmware" value="vmware" />
+            <label for="hv-vmware">
+              <div class="radio-indicator"></div>
+              <div class="radio-card-content">
+                <div class="radio-card-title">VMware vSphere</div>
+                <div class="radio-card-desc">Plugin IBM Storage para vCenter, VAAI, vVols</div>
+              </div>
+            </label>
+          </div>
+          <div class="radio-card">
+            <input type="radio" name="hypervisor" id="hv-hyperv" value="hyperv" />
+            <label for="hv-hyperv">
+              <div class="radio-indicator"></div>
+              <div class="radio-card-content">
+                <div class="radio-card-title">Microsoft Hyper-V</div>
+                <div class="radio-card-desc">SMB 3.0, CSV, ODX — integración nativa</div>
+              </div>
+            </label>
+          </div>
+          <div class="radio-card">
+            <input type="radio" name="hypervisor" id="hv-bare" value="bare" />
+            <label for="hv-bare">
+              <div class="radio-indicator"></div>
+              <div class="radio-card-content">
+                <div class="radio-card-title">Bare metal</div>
+                <div class="radio-card-desc">Sin hipervisor — servidores físicos directos</div>
+              </div>
+            </label>
+          </div>
+          <div class="radio-card">
+            <input type="radio" name="hypervisor" id="hv-mixed" value="mixed" />
+            <label for="hv-mixed">
+              <div class="radio-indicator"></div>
+              <div class="radio-card-content">
+                <div class="radio-card-title">Mixto / Varios</div>
+                <div class="radio-card-desc">Combinación de plataformas en el mismo entorno</div>
+              </div>
+            </label>
+          </div>
         </div>
-        <div class="iops-card">
-          <input type="radio" name="iops" id="iops-high" value="high" />
-          <label for="iops-high">
-            <div class="iops-value">50K–200K</div>
-            <div class="iops-label">Alta</div>
-            <div class="iops-range">DBs productivas, virt. densa</div>
-          </label>
-        </div>
-        <div class="iops-card">
-          <input type="radio" name="iops" id="iops-veryhigh" value="veryhigh" />
-          <label for="iops-veryhigh">
-            <div class="iops-value">&gt; 200K</div>
-            <div class="iops-label">Muy alta</div>
-            <div class="iops-range">DBs críticas, HPC, analytics RT</div>
-          </label>
+        <div class="error-msg" id="err-hypervisor" style="margin-top:12px;">Selecciona el entorno de virtualización</div>
+        <div class="nav-buttons">
+          <button class="btn btn-ghost" onclick="prevStep(7)">‹ Atrás</button>
+          <button class="btn btn-primary" onclick="nextStep(7)">Continuar <span class="btn-icon">›</span></button>
         </div>
       </div>
-      <div class="error-msg" id="err-iops" style="margin-top:12px;">Selecciona el nivel de IOPS requerido</div>
-      <div class="nav-buttons">
-        <button class="btn btn-ghost" onclick="prevStep(5)">‹ Atrás</button>
-        <button class="btn btn-primary" onclick="nextStep(5)">Continuar <span class="btn-icon">›</span></button>
-      </div>
-    </div>
 
-    <!-- ── Paso 6: Protocolo de conectividad ── -->
-    <div class="step-card" id="step-6">
-      <div class="corner-deco"></div>
-      <div class="step-number">Paso 06 / 10</div>
-      <div class="step-title">Protocolo de conectividad</div>
-      <div class="step-subtitle">Infraestructura de red de storage disponible o preferida del cliente</div>
-      <div class="radio-cards">
-        <div class="radio-card">
-          <input type="radio" name="protocol" id="proto-fc" value="fc" />
-          <label for="proto-fc">
-            <div class="radio-indicator"></div>
-            <div class="radio-card-content">
-              <div class="radio-card-title">Fibre Channel (FC)</div>
-              <div class="radio-card-desc">SAN dedicada, máxima performance y aislamiento — entornos enterprise con switches FC</div>
-            </div>
-          </label>
+      <!-- Paso 8 -->
+      <div class="step-card" id="step-8">
+        <div class="corner-deco"></div>
+        <div class="step-number">Paso 08 / 10</div>
+        <div class="step-title">¿El cliente tiene storage IBM existente?</div>
+        <div class="step-subtitle">
+          Determina si aplica IBM Storage Virtualize para integración sin migración
+          <button class="tooltip-btn" onclick="toggleTip(this)" style="display:inline-flex;margin-left:8px;vertical-align:middle;">?
+            <div class="tooltip-bubble">Si tiene Storwize, DS Series o FlashSystem anteriores, IBM Storage Virtualize puede federarlos bajo una sola vista sin migración física — protegiendo la inversión existente.</div>
+          </button>
         </div>
-        <div class="radio-card">
-          <input type="radio" name="protocol" id="proto-iscsi" value="iscsi" />
-          <label for="proto-iscsi">
-            <div class="radio-indicator"></div>
-            <div class="radio-card-content">
-              <div class="radio-card-title">iSCSI</div>
-              <div class="radio-card-desc">SAN sobre IP Ethernet — flexible, menor costo de infraestructura de red</div>
-            </div>
-          </label>
+        <div class="radio-cards">
+          <div class="radio-card">
+            <input type="radio" name="existing-ibm" id="ibm-yes" value="yes" />
+            <label for="ibm-yes">
+              <div class="radio-indicator"></div>
+              <div class="radio-card-content">
+                <div class="radio-card-title">Sí — tiene arrays IBM activos</div>
+                <div class="radio-card-desc">Storwize, DS Series, FlashSystem anteriores — pueden federarse sin migración de datos</div>
+              </div>
+            </label>
+          </div>
+          <div class="radio-card">
+            <input type="radio" name="existing-ibm" id="ibm-no" value="no" />
+            <label for="ibm-no">
+              <div class="radio-indicator"></div>
+              <div class="radio-card-content">
+                <div class="radio-card-title">No — entorno nuevo o con otro vendor</div>
+                <div class="radio-card-desc">Primera implementación IBM o migración desde otra plataforma</div>
+              </div>
+            </label>
+          </div>
         </div>
-        <div class="radio-card">
-          <input type="radio" name="protocol" id="proto-nvme" value="nvme" />
-          <label for="proto-nvme">
-            <div class="radio-indicator"></div>
-            <div class="radio-card-content">
-              <div class="radio-card-title">NVMe over Fabrics (NVMe-oF)</div>
-              <div class="radio-card-desc">Máximo throughput y mínima latencia — requiere fabric RDMA (RoCE o InfiniBand)</div>
-            </div>
-          </label>
-        </div>
-        <div class="radio-card">
-          <input type="radio" name="protocol" id="proto-any" value="any" />
-          <label for="proto-any">
-            <div class="radio-indicator"></div>
-            <div class="radio-card-content">
-              <div class="radio-card-title">Sin preferencia / A definir</div>
-              <div class="radio-card-desc">No está definido aún — el simulador considera todas las opciones del portfolio IBM</div>
-            </div>
-          </label>
+        <div class="error-msg" id="err-existing" style="margin-top:12px;">Selecciona una opción</div>
+        <div class="nav-buttons">
+          <button class="btn btn-ghost" onclick="prevStep(8)">‹ Atrás</button>
+          <button class="btn btn-primary" onclick="nextStep(8)">Continuar <span class="btn-icon">›</span></button>
         </div>
       </div>
-      <div class="error-msg" id="err-protocol" style="margin-top:12px;">Selecciona un protocolo</div>
-      <div class="nav-buttons">
-        <button class="btn btn-ghost" onclick="prevStep(6)">‹ Atrás</button>
-        <button class="btn btn-primary" onclick="nextStep(6)">Continuar <span class="btn-icon">›</span></button>
-      </div>
-    </div>
 
-    <!-- ── Paso 7: Entorno de virtualización ── -->
-    <div class="step-card" id="step-7">
-      <div class="corner-deco"></div>
-      <div class="step-number">Paso 07 / 10</div>
-      <div class="step-title">Entorno de virtualización</div>
-      <div class="step-subtitle">Plataforma de hipervisor o entorno de cómputo del cliente</div>
-      <div class="radio-cards radio-cards-2col">
-        <div class="radio-card">
-          <input type="radio" name="hypervisor" id="hv-vmware" value="vmware" />
-          <label for="hv-vmware">
-            <div class="radio-indicator"></div>
-            <div class="radio-card-content">
-              <div class="radio-card-title">VMware vSphere</div>
-              <div class="radio-card-desc">Plugin IBM Storage para vCenter, VAAI, vVols</div>
-            </div>
-          </label>
+      <!-- Paso 9 -->
+      <div class="step-card" id="step-9">
+        <div class="corner-deco"></div>
+        <div class="step-number">Paso 09 / 10</div>
+        <div class="step-title">Nivel de disponibilidad</div>
+        <div class="step-subtitle">
+          ¿Cuánto impacto tiene un tiempo de inactividad no planificado?
+          <button class="tooltip-btn" onclick="toggleTip(this)" style="display:inline-flex;margin-left:8px;vertical-align:middle;">?
+            <div class="tooltip-bubble">Crítico = 99.9999% (~32 seg downtime/año). Medio = 99.99% (~52 min/año). Básico = 99.9% (~8.7 horas/año).</div>
+          </button>
         </div>
-        <div class="radio-card">
-          <input type="radio" name="hypervisor" id="hv-hyperv" value="hyperv" />
-          <label for="hv-hyperv">
-            <div class="radio-indicator"></div>
-            <div class="radio-card-content">
-              <div class="radio-card-title">Microsoft Hyper-V</div>
-              <div class="radio-card-desc">SMB 3.0, CSV, ODX — integración nativa</div>
-            </div>
-          </label>
+        <div class="radio-cards">
+          <div class="radio-card">
+            <input type="radio" name="avail" id="avail-basic" value="basic" />
+            <label for="avail-basic">
+              <div class="radio-indicator"></div>
+              <div class="radio-card-content">
+                <div class="radio-card-title">Básico — 99.9%</div>
+                <div class="radio-card-desc">Tolerancia de horas — desarrollo, pruebas, archivo frío</div>
+              </div>
+            </label>
+          </div>
+          <div class="radio-card">
+            <input type="radio" name="avail" id="avail-medium" value="medium" />
+            <label for="avail-medium">
+              <div class="radio-indicator"></div>
+              <div class="radio-card-content">
+                <div class="radio-card-title">Medio — 99.99%</div>
+                <div class="radio-card-desc">Tolerancia de minutos — operaciones de negocio importantes</div>
+              </div>
+            </label>
+          </div>
+          <div class="radio-card">
+            <input type="radio" name="avail" id="avail-critical" value="critical" />
+            <label for="avail-critical">
+              <div class="radio-indicator"></div>
+              <div class="radio-card-content">
+                <div class="radio-card-title">Crítico — 99.9999%</div>
+                <div class="radio-card-desc">Cero tolerancia — producción 24/7, misión crítica, tiempo real</div>
+              </div>
+            </label>
+          </div>
         </div>
-        <div class="radio-card">
-          <input type="radio" name="hypervisor" id="hv-bare" value="bare" />
-          <label for="hv-bare">
-            <div class="radio-indicator"></div>
-            <div class="radio-card-content">
-              <div class="radio-card-title">Bare metal</div>
-              <div class="radio-card-desc">Sin hipervisor — servidores físicos directos</div>
-            </div>
-          </label>
-        </div>
-        <div class="radio-card">
-          <input type="radio" name="hypervisor" id="hv-mixed" value="mixed" />
-          <label for="hv-mixed">
-            <div class="radio-indicator"></div>
-            <div class="radio-card-content">
-              <div class="radio-card-title">Mixto / Varios</div>
-              <div class="radio-card-desc">Combinación de plataformas en el mismo entorno</div>
-            </div>
-          </label>
+        <div class="error-msg" id="err-avail" style="margin-top:12px;">Selecciona un nivel de disponibilidad</div>
+        <div class="nav-buttons">
+          <button class="btn btn-ghost" onclick="prevStep(9)">‹ Atrás</button>
+          <button class="btn btn-primary" onclick="nextStep(9)">Continuar <span class="btn-icon">›</span></button>
         </div>
       </div>
-      <div class="error-msg" id="err-hypervisor" style="margin-top:12px;">Selecciona el entorno de virtualización</div>
-      <div class="nav-buttons">
-        <button class="btn btn-ghost" onclick="prevStep(7)">‹ Atrás</button>
-        <button class="btn btn-primary" onclick="nextStep(7)">Continuar <span class="btn-icon">›</span></button>
-      </div>
-    </div>
 
-    <!-- ── Paso 8: IBM storage existente ── -->
-    <div class="step-card" id="step-8">
-      <div class="corner-deco"></div>
-      <div class="step-number">Paso 08 / 10</div>
-      <div class="step-title">¿El cliente tiene storage IBM existente?</div>
-      <div class="step-subtitle">Determina si se puede aprovechar IBM Storage Virtualize para integración sin migración</div>
-      <div class="radio-cards">
-        <div class="radio-card">
-          <input type="radio" name="existing-ibm" id="ibm-yes" value="yes" />
-          <label for="ibm-yes">
-            <div class="radio-indicator"></div>
-            <div class="radio-card-content">
-              <div class="radio-card-title">Sí — tiene arrays IBM activos</div>
-              <div class="radio-card-desc">Storwize, DS Series, FlashSystem anteriores — pueden federarse con IBM Storage Virtualize sin migración de datos</div>
-            </div>
-          </label>
+      <!-- Paso 10 -->
+      <div class="step-card" id="step-10">
+        <div class="corner-deco"></div>
+        <div class="step-number">Paso 10 / 10</div>
+        <div class="step-title">Presupuesto aproximado</div>
+        <div class="step-subtitle">
+          Marco de inversión disponible del cliente
+          <button class="tooltip-btn" onclick="toggleTip(this)" style="display:inline-flex;margin-left:8px;vertical-align:middle;">?
+            <div class="tooltip-bubble">No implica cifras exactas. "Bajo" prioriza el costo inicial. "Alto" prioriza performance y resiliencia sin restricciones de plataforma.</div>
+          </button>
         </div>
-        <div class="radio-card">
-          <input type="radio" name="existing-ibm" id="ibm-no" value="no" />
-          <label for="ibm-no">
-            <div class="radio-indicator"></div>
-            <div class="radio-card-content">
-              <div class="radio-card-title">No — entorno nuevo o con otro vendor</div>
-              <div class="radio-card-desc">Primera implementación IBM o migración desde otra plataforma</div>
-            </div>
-          </label>
+        <div class="radio-cards">
+          <div class="radio-card">
+            <input type="radio" name="budget" id="budget-low" value="low" />
+            <label for="budget-low">
+              <div class="radio-indicator"></div>
+              <div class="radio-card-content">
+                <div class="radio-card-title">Bajo</div>
+                <div class="radio-card-desc">Prioridad en costo — máxima capacidad por menor inversión inicial</div>
+              </div>
+            </label>
+          </div>
+          <div class="radio-card">
+            <input type="radio" name="budget" id="budget-medium" value="medium" />
+            <label for="budget-medium">
+              <div class="radio-indicator"></div>
+              <div class="radio-card-content">
+                <div class="radio-card-title">Medio</div>
+                <div class="radio-card-desc">Balance entre performance, redundancia y costo total de propiedad</div>
+              </div>
+            </label>
+          </div>
+          <div class="radio-card">
+            <input type="radio" name="budget" id="budget-high" value="high" />
+            <label for="budget-high">
+              <div class="radio-indicator"></div>
+              <div class="radio-card-content">
+                <div class="radio-card-title">Alto</div>
+                <div class="radio-card-desc">Prioridad en performance y resiliencia — solución IBM enterprise de primer nivel</div>
+              </div>
+            </label>
+          </div>
+        </div>
+        <div class="error-msg" id="err-budget" style="margin-top:12px;">Selecciona un rango de presupuesto</div>
+        <div class="nav-buttons">
+          <button class="btn btn-ghost" onclick="prevStep(10)">‹ Atrás</button>
+          <button class="btn btn-primary" onclick="runAnalysis()">Analizar y Recomendar <span class="btn-icon">&#9658;</span></button>
         </div>
       </div>
-      <div class="error-msg" id="err-existing" style="margin-top:12px;">Selecciona una opción</div>
-      <div class="nav-buttons">
-        <button class="btn btn-ghost" onclick="prevStep(8)">‹ Atrás</button>
-        <button class="btn btn-primary" onclick="nextStep(8)">Continuar <span class="btn-icon">›</span></button>
-      </div>
-    </div>
 
-    <!-- ── Paso 9: Disponibilidad ── -->
-    <div class="step-card" id="step-9">
-      <div class="corner-deco"></div>
-      <div class="step-number">Paso 09 / 10</div>
-      <div class="step-title">Nivel de disponibilidad</div>
-      <div class="step-subtitle">¿Cuánto impacto tiene un tiempo de inactividad no planificado?</div>
-      <div class="radio-cards">
-        <div class="radio-card">
-          <input type="radio" name="avail" id="avail-basic" value="basic" />
-          <label for="avail-basic">
-            <div class="radio-indicator"></div>
-            <div class="radio-card-content">
-              <div class="radio-card-title">Básico</div>
-              <div class="radio-card-desc">Tolerancia de horas — desarrollo, pruebas, archivo frío</div>
-            </div>
-          </label>
-        </div>
-        <div class="radio-card">
-          <input type="radio" name="avail" id="avail-medium" value="medium" />
-          <label for="avail-medium">
-            <div class="radio-indicator"></div>
-            <div class="radio-card-content">
-              <div class="radio-card-title">Medio</div>
-              <div class="radio-card-desc">Tolerancia de minutos — operaciones de negocio importantes</div>
-            </div>
-          </label>
-        </div>
-        <div class="radio-card">
-          <input type="radio" name="avail" id="avail-critical" value="critical" />
-          <label for="avail-critical">
-            <div class="radio-indicator"></div>
-            <div class="radio-card-content">
-              <div class="radio-card-title">Crítico</div>
-              <div class="radio-card-desc">Cero tolerancia — producción 24/7, misión crítica, tiempo real</div>
-            </div>
-          </label>
-        </div>
-      </div>
-      <div class="error-msg" id="err-avail" style="margin-top:12px;">Selecciona un nivel de disponibilidad</div>
-      <div class="nav-buttons">
-        <button class="btn btn-ghost" onclick="prevStep(9)">‹ Atrás</button>
-        <button class="btn btn-primary" onclick="nextStep(9)">Continuar <span class="btn-icon">›</span></button>
-      </div>
-    </div>
+    </div><!-- /wizard-main -->
 
-    <!-- ── Paso 10: Presupuesto ── -->
-    <div class="step-card" id="step-10">
-      <div class="corner-deco"></div>
-      <div class="step-number">Paso 10 / 10</div>
-      <div class="step-title">Presupuesto aproximado</div>
-      <div class="step-subtitle">Marco de inversión disponible del cliente</div>
-      <div class="radio-cards">
-        <div class="radio-card">
-          <input type="radio" name="budget" id="budget-low" value="low" />
-          <label for="budget-low">
-            <div class="radio-indicator"></div>
-            <div class="radio-card-content">
-              <div class="radio-card-title">Bajo</div>
-              <div class="radio-card-desc">Prioridad en costo — máxima capacidad por menor inversión inicial</div>
-            </div>
-          </label>
+    <!-- ── Sidebar ── -->
+    <aside id="wizard-sidebar" aria-label="Resumen de datos ingresados">
+      <div class="sidebar-panel">
+        <div class="sidebar-header">
+          <span class="sidebar-title">&#9632; Datos ingresados</span>
+          <span class="sidebar-step-count" id="sb-step-count">0 / 10</span>
         </div>
-        <div class="radio-card">
-          <input type="radio" name="budget" id="budget-medium" value="medium" />
-          <label for="budget-medium">
-            <div class="radio-indicator"></div>
-            <div class="radio-card-content">
-              <div class="radio-card-title">Medio</div>
-              <div class="radio-card-desc">Balance entre performance, redundancia y costo total de propiedad</div>
-            </div>
-          </label>
-        </div>
-        <div class="radio-card">
-          <input type="radio" name="budget" id="budget-high" value="high" />
-          <label for="budget-high">
-            <div class="radio-indicator"></div>
-            <div class="radio-card-content">
-              <div class="radio-card-title">Alto</div>
-              <div class="radio-card-desc">Prioridad en performance y resiliencia — solución IBM enterprise de primer nivel</div>
-            </div>
-          </label>
-        </div>
+        <div class="sidebar-list" id="sidebar-list"></div>
       </div>
-      <div class="error-msg" id="err-budget" style="margin-top:12px;">Selecciona un rango de presupuesto</div>
-      <div class="nav-buttons">
-        <button class="btn btn-ghost" onclick="prevStep(10)">‹ Atrás</button>
-        <button class="btn btn-primary" onclick="runAnalysis()">Analizar y Recomendar <span class="btn-icon">&#9658;</span></button>
-      </div>
-    </div>
+    </aside>
 
-  </div><!-- /wizard-container -->
+  </div><!-- /wizard-layout -->
 
   <div class="processing" id="processing">&#9632; Procesando parámetros... generando recomendación IBM Storage</div>
 
-  <!-- ══════════════════ RESULTS ══════════════════ -->
+  <!-- ══════════════ RESULTS ══════════════ -->
   <div id="results-section">
 
-    <!-- Client band -->
     <div class="results-client-band" id="client-band">
-      <div>
-        <div class="rcb-label">Cliente / Oportunidad</div>
-        <div class="rcb-value" id="rcb-client"></div>
-      </div>
-      <div>
-        <div class="rcb-label">Fecha del análisis</div>
-        <div class="rcb-value" id="rcb-date"></div>
-      </div>
+      <div><div class="rcb-label">Cliente / Oportunidad</div><div class="rcb-value" id="rcb-client"></div></div>
+      <div><div class="rcb-label">Fecha del análisis</div><div class="rcb-value" id="rcb-date"></div></div>
     </div>
 
     <div class="results-header">
@@ -814,34 +1025,21 @@
       <div class="results-sub" id="results-sub"></div>
     </div>
 
-    <!-- Context tags -->
     <div class="context-tags" id="context-tags"></div>
 
-    <!-- Projection band -->
     <div class="projection-band">
-      <div class="proj-stat">
-        <div class="proj-label">Capacidad actual</div>
-        <div class="proj-value" id="proj-current">—<span>TB</span></div>
-      </div>
-      <div class="proj-stat">
-        <div class="proj-label">Proyección 3 años</div>
-        <div class="proj-value" id="proj-3y">—<span>TB</span></div>
-      </div>
-      <div class="proj-stat">
-        <div class="proj-label">Crecimiento anual</div>
-        <div class="proj-value" id="proj-growth">—<span>%</span></div>
-      </div>
-      <div class="proj-stat">
-        <div class="proj-label">Cap. recomendada (+30%)</div>
-        <div class="proj-value" id="proj-rec">—<span>TB</span></div>
-      </div>
+      <div class="proj-stat"><div class="proj-label">Capacidad actual</div><div class="proj-value" id="proj-current">—<span>TB</span></div></div>
+      <div class="proj-stat"><div class="proj-label">Proyección 3 años</div><div class="proj-value" id="proj-3y">—<span>TB</span></div></div>
+      <div class="proj-stat"><div class="proj-label">Crecimiento anual</div><div class="proj-value" id="proj-growth">—<span>%</span></div></div>
+      <div class="proj-stat"><div class="proj-label">Cap. recomendada (+30%)</div><div class="proj-value" id="proj-rec">—<span>TB</span></div></div>
     </div>
 
     <div id="cards-container"></div>
 
-    <!-- Summary -->
     <div class="summary-section">
-      <div class="summary-title">&#9632; Resumen de datos ingresados</div>
+      <div class="summary-header">
+        <div class="summary-title">&#9632; Resumen de datos ingresados</div>
+      </div>
       <div class="summary-grid" id="summary-grid"></div>
     </div>
 
@@ -850,423 +1048,427 @@
       <button class="btn btn-secondary" onclick="exportPDF()">&#9113; Exportar como PDF</button>
     </div>
 
-  </div><!-- /results-section -->
+  </div>
 
 </div><!-- /app -->
 
 <script>
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  STATE
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 const state = {
-  clientName:   '',
-  servers:      null,
-  currentTB:    null,
-  growthPct:    null,
-  loads:        [],
-  iops:         null,
-  protocol:     null,
-  hypervisor:   null,
-  existingIBM:  null,
-  availability: null,
-  budget:       null
+  clientName: '', servers: null, currentTB: null, growthPct: null,
+  loads: [], iops: null, protocol: null, hypervisor: null,
+  existingIBM: null, availability: null, budget: null
 };
-
 const TOTAL_STEPS = 10;
 let currentStep = 1;
+let navDirection = 'fwd'; // 'fwd' | 'bwd'
 
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  IBM PORTFOLIO
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 const IBM_SOLUTIONS = {
-  fs5300: {
-    name: 'IBM FlashSystem 5300',
-    tier: 'Entry-Level All-Flash Array',
-    family: 'IBM FlashSystem',
-    tagline: 'Entry all-flash · hasta ~1 PB efectivo · iSCSI / FC / NVMe-oF'
-  },
-  fs7300: {
-    name: 'IBM FlashSystem 7300',
-    tier: 'Mid-Range All-Flash Array',
-    family: 'IBM FlashSystem',
-    tagline: 'Mid-range all-flash · hasta ~4 PB efectivo · NVMe-oF / FC / iSCSI'
-  },
-  fs9500: {
-    name: 'IBM FlashSystem 9500',
-    tier: 'Enterprise All-Flash Array',
-    family: 'IBM FlashSystem',
-    tagline: 'Enterprise all-flash · hasta ~32 PB efectivo · NVMe-oF / FC / iSCSI'
-  },
-  sv5100: {
-    name: 'IBM Storage Virtualize (SV5100)',
-    tier: 'Híbrido Flash + HDD — Virtualización de Storage',
-    family: 'IBM Storwize / Storage Virtualize',
-    tagline: 'Hybrid flash/HDD · tiering automático · hasta ~2 PB · FC / iSCSI / NFS / SMB'
-  },
-  ibmcos: {
-    name: 'IBM Storage Scale / Cloud Object Storage',
-    tier: 'Object Storage — Backup, Archivo y Datos No Estructurados',
-    family: 'IBM Storage Scale',
-    tagline: 'Escala masiva · petabytes · S3 / NFS / SMB · ideal backup y archivo frío'
-  }
+  fs5300: { name:'IBM FlashSystem 5300', tier:'Entry-Level All-Flash Array', family:'IBM FlashSystem', tagline:'Entry all-flash · hasta ~1 PB efectivo · iSCSI / FC / NVMe-oF' },
+  fs7300: { name:'IBM FlashSystem 7300', tier:'Mid-Range All-Flash Array', family:'IBM FlashSystem', tagline:'Mid-range all-flash · hasta ~4 PB efectivo · NVMe-oF / FC / iSCSI' },
+  fs9500: { name:'IBM FlashSystem 9500', tier:'Enterprise All-Flash Array', family:'IBM FlashSystem', tagline:'Enterprise all-flash · hasta ~32 PB efectivo · NVMe-oF / FC / iSCSI' },
+  sv5100: { name:'IBM Storage Virtualize (SV5100)', tier:'Híbrido Flash + HDD — Virtualización de Storage', family:'IBM Storwize / Storage Virtualize', tagline:'Hybrid flash/HDD · tiering automático · hasta ~2 PB · FC / iSCSI / NFS / SMB' },
+  ibmcos: { name:'IBM Storage Scale / Cloud Object Storage', tier:'Object Storage — Backup, Archivo y Datos No Estructurados', family:'IBM Storage Scale', tagline:'Escala masiva · petabytes · S3 / NFS / SMB · ideal backup y archivo frío' }
 };
 
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+//  SIDEBAR CONFIG
+// ══════════════════════════════════════════════════
+const SIDEBAR_STEPS = [
+  { step:1,  label:'Cliente',         stateKeys:['clientName','servers'] },
+  { step:2,  label:'Volumen',         stateKeys:['currentTB'] },
+  { step:3,  label:'Crecimiento',     stateKeys:['growthPct'] },
+  { step:4,  label:'Carga',           stateKeys:['loads'] },
+  { step:5,  label:'IOPS',            stateKeys:['iops'] },
+  { step:6,  label:'Protocolo',       stateKeys:['protocol'] },
+  { step:7,  label:'Hipervisor',      stateKeys:['hypervisor'] },
+  { step:8,  label:'IBM existente',   stateKeys:['existingIBM'] },
+  { step:9,  label:'Disponibilidad',  stateKeys:['availability'] },
+  { step:10, label:'Presupuesto',     stateKeys:['budget'] }
+];
+
+// Maps state key → wizard step (for edit buttons)
+const STATE_STEP_MAP = {
+  clientName:1, servers:1, currentTB:2, growthPct:3,
+  loads:4, iops:5, protocol:6, hypervisor:7,
+  existingIBM:8, availability:9, budget:10
+};
+
+// ══════════════════════════════════════════════════
 //  INIT
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 (function init() {
+  // Progress dots
   const c = document.getElementById('steps-dots');
   for (let i = 1; i <= TOTAL_STEPS; i++) {
     const d = document.createElement('div');
-    d.className = 'step-dot' + (i === 1 ? ' active' : '');
+    d.className = 'step-dot' + (i===1?' active':'');
     d.id = 'dot-' + i;
     c.appendChild(d);
   }
   updateProgress(1);
+  buildSidebar();
+
+  // Live sidebar updates on inputs
+  document.querySelectorAll('input[type="text"], input[type="number"]').forEach(el => {
+    el.addEventListener('input', () => { collectLive(); updateSidebar(); });
+  });
+  document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(el => {
+    el.addEventListener('change', () => {
+      haptic(8);
+      collectLive();
+      updateSidebar();
+    });
+  });
 })();
 
+// ══════════════════════════════════════════════════
+//  THEME TOGGLE
+// ══════════════════════════════════════════════════
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('theme-label').textContent = isDark ? 'Claro' : 'Oscuro';
+}
+
+// ══════════════════════════════════════════════════
+//  TOOLTIPS
+// ══════════════════════════════════════════════════
+function toggleTip(btn) {
+  const wasOpen = btn.classList.contains('open');
+  document.querySelectorAll('.tooltip-btn.open').forEach(b => b.classList.remove('open'));
+  if (!wasOpen) btn.classList.add('open');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.tooltip-btn')) {
+    document.querySelectorAll('.tooltip-btn.open').forEach(b => b.classList.remove('open'));
+  }
+});
+
+// ══════════════════════════════════════════════════
+//  HAPTIC
+// ══════════════════════════════════════════════════
+function haptic(ms) {
+  if (navigator.vibrate) navigator.vibrate(ms);
+}
+
+// ══════════════════════════════════════════════════
+//  PROGRESS
+// ══════════════════════════════════════════════════
 function updateProgress(step) {
-  document.getElementById('progress-fill').style.width = (((step - 1) / TOTAL_STEPS) * 100) + '%';
+  document.getElementById('progress-fill').style.width = (((step-1)/TOTAL_STEPS)*100) + '%';
   document.getElementById('progress-counter').textContent = `Paso ${step} de ${TOTAL_STEPS}`;
-  for (let i = 1; i <= TOTAL_STEPS; i++) {
-    const d = document.getElementById('dot-' + i);
-    d.className = 'step-dot' + (i < step ? ' done' : i === step ? ' active' : '');
+  for (let i=1; i<=TOTAL_STEPS; i++) {
+    const d = document.getElementById('dot-'+i);
+    d.className = 'step-dot' + (i<step?' done':i===step?' active':'');
   }
 }
 
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  NAVIGATION
-// ═══════════════════════════════════════════════════
-function showStep(n) {
-  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
-  const card = document.getElementById('step-' + n);
-  card.classList.add('active');
-  card.style.animation = 'none';
-  requestAnimationFrame(() => { card.style.animation = ''; });
+// ══════════════════════════════════════════════════
+function showStep(n, dir) {
+  navDirection = dir || 'fwd';
+  document.querySelectorAll('.step-card').forEach(c => {
+    c.classList.remove('active','anim-fwd','anim-bwd');
+  });
+  const card = document.getElementById('step-'+n);
+  card.classList.add('active', navDirection === 'fwd' ? 'anim-fwd' : 'anim-bwd');
   currentStep = n;
   updateProgress(n);
+  updateSidebar();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function prevStep(from) { if (from > 1) showStep(from - 1); }
+function prevStep(from) {
+  if (from > 1) { collectLive(); haptic(6); showStep(from-1, 'bwd'); }
+}
 
 function nextStep(from) {
   if (!validateStep(from)) return;
   collectStep(from);
-  showStep(from + 1);
+  haptic(10);
+  if (from < TOTAL_STEPS) showStep(from+1, 'fwd');
 }
 
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  VALIDATION
-// ═══════════════════════════════════════════════════
-function showErr(id, show) {
-  const el = document.getElementById(id);
-  if (el) el.classList.toggle('show', show);
-}
+// ══════════════════════════════════════════════════
+function showErr(id, show) { const el=document.getElementById(id); if(el) el.classList.toggle('show',show); }
 
 function validateStep(step) {
   let ok = true;
-  if (step === 1) {
-    const name = document.getElementById('client-name').value.trim();
-    const srv  = parseInt(document.getElementById('num-servers').value);
-    const okName = name.length > 0;
-    const okSrv  = !isNaN(srv) && srv > 0;
-    showErr('err-client', !okName);
-    showErr('err-servers', !okSrv);
-    ok = okName && okSrv;
+  if (step===1) {
+    const name=document.getElementById('client-name').value.trim();
+    const srv=parseInt(document.getElementById('num-servers').value);
+    const okN=name.length>0, okS=!isNaN(srv)&&srv>0;
+    showErr('err-client',!okN); showErr('err-servers',!okS);
+    ok = okN && okS;
   }
-  if (step === 2)  { const v = parseFloat(document.getElementById('current-tb').value); ok = !isNaN(v) && v > 0; showErr('err-tb', !ok); }
-  if (step === 3)  { const v = parseFloat(document.getElementById('growth-pct').value); ok = !isNaN(v) && v >= 0 && v <= 500; showErr('err-growth', !ok); }
-  if (step === 4)  { ok = document.querySelectorAll('#step-4 input[type="checkbox"]:checked').length > 0; showErr('err-load', !ok); }
-  if (step === 5)  { ok = !!document.querySelector('input[name="iops"]:checked'); showErr('err-iops', !ok); }
-  if (step === 6)  { ok = !!document.querySelector('input[name="protocol"]:checked'); showErr('err-protocol', !ok); }
-  if (step === 7)  { ok = !!document.querySelector('input[name="hypervisor"]:checked'); showErr('err-hypervisor', !ok); }
-  if (step === 8)  { ok = !!document.querySelector('input[name="existing-ibm"]:checked'); showErr('err-existing', !ok); }
-  if (step === 9)  { ok = !!document.querySelector('input[name="avail"]:checked'); showErr('err-avail', !ok); }
-  if (step === 10) { ok = !!document.querySelector('input[name="budget"]:checked'); showErr('err-budget', !ok); }
+  if (step===2)  { const v=parseFloat(document.getElementById('current-tb').value); ok=!isNaN(v)&&v>0; showErr('err-tb',!ok); }
+  if (step===3)  { const v=parseFloat(document.getElementById('growth-pct').value); ok=!isNaN(v)&&v>=0&&v<=500; showErr('err-growth',!ok); }
+  if (step===4)  { ok=document.querySelectorAll('#step-4 input[type="checkbox"]:checked').length>0; showErr('err-load',!ok); }
+  if (step===5)  { ok=!!document.querySelector('input[name="iops"]:checked'); showErr('err-iops',!ok); }
+  if (step===6)  { ok=!!document.querySelector('input[name="protocol"]:checked'); showErr('err-protocol',!ok); }
+  if (step===7)  { ok=!!document.querySelector('input[name="hypervisor"]:checked'); showErr('err-hypervisor',!ok); }
+  if (step===8)  { ok=!!document.querySelector('input[name="existing-ibm"]:checked'); showErr('err-existing',!ok); }
+  if (step===9)  { ok=!!document.querySelector('input[name="avail"]:checked'); showErr('err-avail',!ok); }
+  if (step===10) { ok=!!document.querySelector('input[name="budget"]:checked'); showErr('err-budget',!ok); }
   return ok;
 }
 
-// ═══════════════════════════════════════════════════
-//  COLLECT
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+//  COLLECT — full step commit
+// ══════════════════════════════════════════════════
 function collectStep(step) {
-  if (step === 1)  { state.clientName = document.getElementById('client-name').value.trim(); state.servers = parseInt(document.getElementById('num-servers').value); }
-  if (step === 2)  state.currentTB   = parseFloat(document.getElementById('current-tb').value);
-  if (step === 3)  state.growthPct   = parseFloat(document.getElementById('growth-pct').value);
-  if (step === 4)  state.loads       = Array.from(document.querySelectorAll('#step-4 input[type="checkbox"]:checked')).map(c => c.value);
-  if (step === 5)  state.iops        = document.querySelector('input[name="iops"]:checked').value;
-  if (step === 6)  state.protocol    = document.querySelector('input[name="protocol"]:checked').value;
-  if (step === 7)  state.hypervisor  = document.querySelector('input[name="hypervisor"]:checked').value;
-  if (step === 8)  state.existingIBM = document.querySelector('input[name="existing-ibm"]:checked').value;
-  if (step === 9)  state.availability = document.querySelector('input[name="avail"]:checked').value;
-  if (step === 10) state.budget      = document.querySelector('input[name="budget"]:checked').value;
+  if (step===1)  { state.clientName=document.getElementById('client-name').value.trim(); state.servers=parseInt(document.getElementById('num-servers').value); }
+  if (step===2)  state.currentTB   = parseFloat(document.getElementById('current-tb').value);
+  if (step===3)  state.growthPct   = parseFloat(document.getElementById('growth-pct').value);
+  if (step===4)  state.loads       = Array.from(document.querySelectorAll('#step-4 input[type="checkbox"]:checked')).map(c=>c.value);
+  if (step===5)  state.iops        = document.querySelector('input[name="iops"]:checked').value;
+  if (step===6)  state.protocol    = document.querySelector('input[name="protocol"]:checked').value;
+  if (step===7)  state.hypervisor  = document.querySelector('input[name="hypervisor"]:checked').value;
+  if (step===8)  state.existingIBM = document.querySelector('input[name="existing-ibm"]:checked').value;
+  if (step===9)  state.availability= document.querySelector('input[name="avail"]:checked').value;
+  if (step===10) state.budget      = document.querySelector('input[name="budget"]:checked').value;
 }
 
-// ═══════════════════════════════════════════════════
+// Live collect (no validation) for sidebar preview
+function collectLive() {
+  const cn=document.getElementById('client-name').value.trim(); if(cn) state.clientName=cn;
+  const ns=parseInt(document.getElementById('num-servers').value); if(!isNaN(ns)&&ns>0) state.servers=ns;
+  const tb=parseFloat(document.getElementById('current-tb').value); if(!isNaN(tb)&&tb>0) state.currentTB=tb;
+  const gp=parseFloat(document.getElementById('growth-pct').value); if(!isNaN(gp)&&gp>=0) state.growthPct=gp;
+  const loads=Array.from(document.querySelectorAll('#step-4 input[type="checkbox"]:checked')).map(c=>c.value); if(loads.length) state.loads=loads;
+  const iops=document.querySelector('input[name="iops"]:checked'); if(iops) state.iops=iops.value;
+  const proto=document.querySelector('input[name="protocol"]:checked'); if(proto) state.protocol=proto.value;
+  const hv=document.querySelector('input[name="hypervisor"]:checked'); if(hv) state.hypervisor=hv.value;
+  const eibm=document.querySelector('input[name="existing-ibm"]:checked'); if(eibm) state.existingIBM=eibm.value;
+  const av=document.querySelector('input[name="avail"]:checked'); if(av) state.availability=av.value;
+  const bud=document.querySelector('input[name="budget"]:checked'); if(bud) state.budget=bud.value;
+}
+
+// ══════════════════════════════════════════════════
+//  SIDEBAR
+// ══════════════════════════════════════════════════
+const IOPS_LBL  = { low:'< 10K IOPS', medium:'10K–50K IOPS', high:'50K–200K IOPS', veryhigh:'> 200K IOPS' };
+const PROTO_LBL = { fc:'Fibre Channel', iscsi:'iSCSI', nvme:'NVMe-oF', any:'Sin preferencia' };
+const HV_LBL    = { vmware:'VMware vSphere', hyperv:'Hyper-V', bare:'Bare metal', mixed:'Mixto' };
+const IBM_LBL   = { yes:'IBM existente', no:'Sin IBM prev.' };
+const AVAIL_LBL = { basic:'Básico 99.9%', medium:'Medio 99.99%', critical:'Crítico 99.9999%' };
+const BUDGET_LBL= { low:'Bajo', medium:'Medio', high:'Alto' };
+const LOAD_LBL  = { vms:'VMs', backup:'Backup', files:'Archivos', db:'Bases de datos' };
+
+function getStateValue(key) {
+  const v = state[key];
+  if (v === null || v === '' || v === undefined) return null;
+  if (Array.isArray(v) && v.length === 0) return null;
+  if (key==='clientName') return v;
+  if (key==='servers')    return v ? `${v} servidores` : null;
+  if (key==='currentTB')  return v ? `${v} TB` : null;
+  if (key==='growthPct')  return v !== null ? `${v}% anual` : null;
+  if (key==='loads')      return v.length ? v.map(l=>LOAD_LBL[l]).join(', ') : null;
+  if (key==='iops')       return IOPS_LBL[v] || null;
+  if (key==='protocol')   return PROTO_LBL[v] || null;
+  if (key==='hypervisor') return HV_LBL[v] || null;
+  if (key==='existingIBM')return IBM_LBL[v] || null;
+  if (key==='availability')return AVAIL_LBL[v] || null;
+  if (key==='budget')     return BUDGET_LBL[v] || null;
+  return String(v);
+}
+
+function buildSidebar() {
+  const list = document.getElementById('sidebar-list');
+  list.innerHTML = SIDEBAR_STEPS.map(s => `
+    <div class="sb-item" id="sb-item-${s.step}" data-step="${s.step}">
+      <div class="sb-dot"></div>
+      <div class="sb-content">
+        <div class="sb-label">${s.label}</div>
+        <div class="sb-value" id="sb-val-${s.step}">Pendiente</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateSidebar() {
+  let doneCount = 0;
+  SIDEBAR_STEPS.forEach(s => {
+    const item = document.getElementById('sb-item-'+s.step);
+    const valEl = document.getElementById('sb-val-'+s.step);
+    if (!item || !valEl) return;
+
+    const vals = s.stateKeys.map(k => getStateValue(k)).filter(v=>v!==null);
+    const isDone   = vals.length > 0;
+    const isActive = s.step === currentStep;
+
+    item.className = 'sb-item' + (isDone?' done':'') + (isActive?' active':'');
+    valEl.textContent = isDone ? vals.join(' · ') : 'Pendiente';
+    if (isDone) doneCount++;
+  });
+  document.getElementById('sb-step-count').textContent = `${doneCount} / ${TOTAL_STEPS}`;
+}
+
+// ══════════════════════════════════════════════════
 //  RUN ANALYSIS
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 function runAnalysis() {
   if (!validateStep(10)) return;
   collectStep(10);
-  document.getElementById('wizard-container').style.display = 'none';
-  document.getElementById('progress-wrap').style.display    = 'none';
-  const proc = document.getElementById('processing');
-  proc.classList.add('show');
+  haptic(15);
+  document.getElementById('wizard-layout').style.display = 'none';
+  document.getElementById('progress-wrap').style.display = 'none';
+  document.getElementById('processing').classList.add('show');
   setTimeout(() => {
-    proc.classList.remove('show');
+    document.getElementById('processing').classList.remove('show');
     buildResults();
     document.getElementById('results-section').classList.add('show');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top:0, behavior:'smooth' });
   }, 1500);
 }
 
-// ═══════════════════════════════════════════════════
-//  SCORING ENGINE — 5 capas
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+//  SCORING — returns { ranking, scores, topScore }
+// ══════════════════════════════════════════════════
 function scoreRecommendations() {
   const { loads, availability, budget, growthPct, currentTB, iops, protocol, hypervisor, existingIBM } = state;
+  const hasDB=loads.includes('db'), hasVMs=loads.includes('vms'), hasBackup=loads.includes('backup'), hasFiles=loads.includes('files');
+  const isCritical=availability==='critical', isMedium=availability==='medium', isBasic=availability==='basic';
+  const isLow=budget==='low', isMid=budget==='medium', isHigh=budget==='high';
+  const proj3y=currentTB*Math.pow(1+growthPct/100,3);
+  const highGrowth=growthPct>=30, large=proj3y>500, huge=proj3y>2000;
 
-  const hasDB     = loads.includes('db');
-  const hasVMs    = loads.includes('vms');
-  const hasBackup = loads.includes('backup');
-  const hasFiles  = loads.includes('files');
+  const s={ fs5300:0, fs7300:0, fs9500:0, sv5100:0, ibmcos:0 };
 
-  const isCritical  = availability === 'critical';
-  const isMedium    = availability === 'medium';
-  const isBasic     = availability === 'basic';
+  // Workload
+  if(hasDB){ if(isCritical){s.fs9500+=50;s.fs7300+=30;} else if(isMedium){s.fs7300+=45;s.fs9500+=20;s.fs5300+=15;} else{s.fs5300+=35;s.fs7300+=20;} }
+  if(hasVMs){ if(isCritical){s.fs9500+=45;s.fs7300+=25;} else if(isMedium){s.fs7300+=40;s.fs5300+=20;s.sv5100+=10;} else{s.fs5300+=30;s.sv5100+=20;} }
+  if(hasBackup){ s.ibmcos+=35;s.sv5100+=30; if(isLow){s.ibmcos+=15;s.sv5100+=10;} if(huge)s.ibmcos+=20; }
+  if(hasFiles){ s.sv5100+=30;s.ibmcos+=20; if(isLow)s.ibmcos+=10; if(isCritical){s.fs7300+=15;s.sv5100+=10;} }
+  // Availability
+  if(isCritical){s.fs9500+=30;s.fs7300+=15;} if(isMedium){s.fs7300+=20;s.sv5100+=10;} if(isBasic){s.sv5100+=15;s.ibmcos+=10;s.fs5300+=10;}
+  // Budget
+  if(isHigh){s.fs9500+=25;s.fs7300+=10;} if(isMid){s.fs7300+=20;s.sv5100+=15;s.fs5300+=10;} if(isLow){s.sv5100+=25;s.ibmcos+=20;s.fs5300+=15;}
+  // Scale
+  if(huge){s.fs9500+=20;s.ibmcos+=25;} if(large&&!huge){s.fs9500+=10;s.fs7300+=15;s.sv5100+=10;} if(!large&&!isHigh)s.fs5300+=10;
+  if(highGrowth&&isHigh)s.fs9500+=15; if(highGrowth&&isMid)s.fs7300+=12;
+  // IOPS
+  if(iops==='veryhigh'){s.fs9500+=40;s.fs7300+=20;} if(iops==='high'){s.fs7300+=30;s.fs9500+=20;s.fs5300+=5;}
+  if(iops==='medium'){s.fs7300+=15;s.fs5300+=20;s.sv5100+=10;} if(iops==='low'){s.sv5100+=20;s.ibmcos+=15;s.fs5300+=10;}
+  // Protocol
+  if(protocol==='nvme'){s.fs9500+=20;s.fs7300+=15;} if(protocol==='fc'){s.fs9500+=10;s.fs7300+=8;s.fs5300+=5;} if(protocol==='iscsi'){s.sv5100+=10;s.fs5300+=8;}
+  // Hypervisor
+  if(hypervisor==='vmware'){s.fs7300+=15;s.fs9500+=10;s.fs5300+=8;} if(hypervisor==='hyperv'){s.sv5100+=12;s.fs5300+=8;}
+  if(hypervisor==='mixed')s.sv5100+=18; if(hypervisor==='bare'){s.fs7300+=8;s.fs5300+=5;}
+  // Existing IBM
+  if(existingIBM==='yes')s.sv5100+=30;
+  // Baselines
+  s.fs5300=Math.max(s.fs5300,5); s.fs7300=Math.max(s.fs7300,5);
+  s.sv5100=Math.max(s.sv5100,(hasBackup||hasFiles||existingIBM==='yes')?20:5);
+  s.ibmcos=Math.max(s.ibmcos,hasBackup?15:5);
 
-  const isLow       = budget === 'low';
-  const isMidBudget = budget === 'medium';
-  const isHigh      = budget === 'high';
+  const sorted = Object.entries(s).sort((a,b)=>b[1]-a[1]);
+  const topScore = sorted[0][1];
+  const ranking  = sorted.slice(0,3).map(([k])=>k);
+  const scoreMap = Object.fromEntries(sorted);
 
-  const proj3y     = currentTB * Math.pow(1 + growthPct / 100, 3);
-  const highGrowth = growthPct >= 30;
-  const largeScale = proj3y > 500;
-  const hugeScale  = proj3y > 2000;
-
-  const s = { fs5300: 0, fs7300: 0, fs9500: 0, sv5100: 0, ibmcos: 0 };
-
-  // ── 1. Workload ──
-  if (hasDB) {
-    if (isCritical)   { s.fs9500 += 50; s.fs7300 += 30; }
-    else if (isMedium){ s.fs7300 += 45; s.fs9500 += 20; s.fs5300 += 15; }
-    else              { s.fs5300 += 35; s.fs7300 += 20; }
-  }
-  if (hasVMs) {
-    if (isCritical)   { s.fs9500 += 45; s.fs7300 += 25; }
-    else if (isMedium){ s.fs7300 += 40; s.fs5300 += 20; s.sv5100 += 10; }
-    else              { s.fs5300 += 30; s.sv5100 += 20; }
-  }
-  if (hasBackup) {
-    s.ibmcos += 35; s.sv5100 += 30;
-    if (isLow)    { s.ibmcos += 15; s.sv5100 += 10; }
-    if (hugeScale){ s.ibmcos += 20; }
-  }
-  if (hasFiles) {
-    s.sv5100 += 30; s.ibmcos += 20;
-    if (isLow)     { s.ibmcos += 10; }
-    if (isCritical){ s.fs7300 += 15; s.sv5100 += 10; }
-  }
-
-  // ── 2. Disponibilidad ──
-  if (isCritical){ s.fs9500 += 30; s.fs7300 += 15; }
-  if (isMedium)  { s.fs7300 += 20; s.sv5100 += 10; }
-  if (isBasic)   { s.sv5100 += 15; s.ibmcos += 10; s.fs5300 += 10; }
-
-  // ── 3. Budget ──
-  if (isHigh)      { s.fs9500 += 25; s.fs7300 += 10; }
-  if (isMidBudget) { s.fs7300 += 20; s.sv5100 += 15; s.fs5300 += 10; }
-  if (isLow)       { s.sv5100 += 25; s.ibmcos += 20; s.fs5300 += 15; }
-
-  // ── 4. Escala / TB ──
-  if (hugeScale)                { s.fs9500 += 20; s.ibmcos += 25; }
-  if (largeScale && !hugeScale) { s.fs9500 += 10; s.fs7300 += 15; s.sv5100 += 10; }
-  if (!largeScale && !isHigh)   { s.fs5300 += 10; }
-  if (highGrowth && isHigh)     { s.fs9500 += 15; }
-  if (highGrowth && isMidBudget){ s.fs7300 += 12; }
-
-  // ── 5a. IOPS ──
-  if (iops === 'veryhigh'){ s.fs9500 += 40; s.fs7300 += 20; }
-  if (iops === 'high')    { s.fs7300 += 30; s.fs9500 += 20; s.fs5300 += 5; }
-  if (iops === 'medium')  { s.fs7300 += 15; s.fs5300 += 20; s.sv5100 += 10; }
-  if (iops === 'low')     { s.sv5100 += 20; s.ibmcos += 15; s.fs5300 += 10; }
-
-  // ── 5b. Protocolo ──
-  if (protocol === 'nvme')  { s.fs9500 += 20; s.fs7300 += 15; }   // NVMe-oF mejor en 9500/7300
-  if (protocol === 'fc')    { s.fs9500 += 10; s.fs7300 += 8; s.fs5300 += 5; }
-  if (protocol === 'iscsi') { s.sv5100 += 10; s.fs5300 += 8; }   // iSCSI más flexible en entry/hybrid
-
-  // ── 5c. Hipervisor ──
-  if (hypervisor === 'vmware')  { s.fs7300 += 15; s.fs9500 += 10; s.fs5300 += 8; }  // IBM Storage Plugin for vCenter
-  if (hypervisor === 'hyperv')  { s.sv5100 += 12; s.fs5300 += 8; }
-  if (hypervisor === 'mixed')   { s.sv5100 += 18; }  // SV5100 es el más multi-protocolo
-  if (hypervisor === 'bare')    { s.fs7300 += 8; s.fs5300 += 5; }
-
-  // ── 5d. IBM Storage existente ──
-  if (existingIBM === 'yes') {
-    s.sv5100 += 30;  // SV5100 puede federar arrays IBM viejos via Storage Virtualize sin migración
-  }
-
-  // ── Baselines ──
-  s.fs5300 = Math.max(s.fs5300, 5);
-  s.fs7300 = Math.max(s.fs7300, 5);
-  s.sv5100 = Math.max(s.sv5100, (hasBackup || hasFiles || existingIBM === 'yes') ? 20 : 5);
-  s.ibmcos = Math.max(s.ibmcos, hasBackup ? 15 : 5);
-
-  return Object.entries(s).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([key]) => key);
+  return { ranking, scoreMap, topScore };
 }
 
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  WHY-TEXT
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 function buildWhyText(key) {
   const { loads, availability, servers, growthPct, currentTB, iops, protocol, hypervisor, existingIBM } = state;
-  const hasDB     = loads.includes('db');
-  const hasVMs    = loads.includes('vms');
-  const hasBackup = loads.includes('backup');
-  const isCritical = availability === 'critical';
-  const proj3y = Math.ceil(currentTB * Math.pow(1 + growthPct / 100, 3));
+  const hasDB=loads.includes('db'), hasVMs=loads.includes('vms'), hasBackup=loads.includes('backup');
+  const isCritical=availability==='critical';
+  const proj3y=Math.ceil(currentTB*Math.pow(1+growthPct/100,3));
+  const pLabel=PROTO_LBL[protocol]||'multiprotocolo';
+  const hLabel=HV_LBL[hypervisor]||'el entorno';
+  const iLabel=IOPS_LBL[iops]||'';
 
-  const protoLabel = { fc: 'Fibre Channel', iscsi: 'iSCSI', nvme: 'NVMe-oF', any: 'multiprotocolo' };
-  const hvLabel    = { vmware: 'VMware vSphere', hyperv: 'Microsoft Hyper-V', bare: 'bare metal', mixed: 'entorno mixto' };
-  const iopsLabel  = { low: '< 10K IOPS', medium: '10K–50K IOPS', high: '50K–200K IOPS', veryhigh: '> 200K IOPS' };
-
-  const pLabel = protoLabel[protocol] || '';
-  const hLabel = hvLabel[hypervisor] || '';
-  const iLabel = iopsLabel[iops] || '';
-
-  const texts = {
-    fs5300: [
+  const texts={
+    fs5300:[
       `El IBM FlashSystem 5300 es el punto de entrada all-flash del portfolio IBM, dimensionado para los ${servers} servidores de este entorno con un requerimiento de ${iLabel}, entregando performance NVMe sin la complejidad de plataformas de mayor escala.`,
-      hypervisor === 'vmware'
+      hypervisor==='vmware'
         ? `Se integra con ${hLabel} mediante el IBM Storage Plugin para vCenter, habilitando VAAI, vVols y thin provisioning automático, reduciendo la carga operativa del equipo de infraestructura.`
         : `Compatible con ${hLabel} a través de ${pLabel}, con soporte nativo para IBM Storage Insights para monitoreo predictivo y gestión centralizada desde una sola consola.`,
       `Con una proyección de ${proj3y} TB a 3 años, el FlashSystem 5300 permite escalar de forma no disruptiva, y su compatibilidad con IBM Storage Virtualize habilita una ruta de crecimiento hacia el 7300 o 9500 sin migración de datos.`
     ],
-    fs7300: [
-      `El IBM FlashSystem 7300 es la plataforma mid-range all-flash de IBM, diseñada para los ${servers} servidores con cargas ${hasDB ? 'de bases de datos ' : ''}${hasVMs ? 'y virtualización ' : ''}que demandan ${iLabel} con consistencia de latencia baja.`,
+    fs7300:[
+      `El IBM FlashSystem 7300 es la plataforma mid-range all-flash de IBM, diseñada para los ${servers} servidores con cargas ${hasDB?'de bases de datos ':''}${hasVMs?'y virtualización ':''}que demandan ${iLabel} con consistencia de latencia baja.`,
       isCritical
         ? `Sus controladores duales activo-activo con IBM HyperSwap y replicación síncrona garantizan continuidad ante fallas de sitio — cubriendo el nivel de disponibilidad crítico requerido. Conectividad ${pLabel} integrada de fábrica.`
-        : hypervisor === 'vmware'
+        : hypervisor==='vmware'
           ? `Con el IBM Storage Plugin para ${hLabel}, habilita vVols, VAAI y snapshots gestionados desde vCenter. IBM Storage Insights Pro anticipa cuellos de botella antes de que afecten producción.`
           : `Integra IBM Storage Insights Pro para monitoreo con IA, anticipando degradaciones de performance. Su soporte ${pLabel} cubre la infraestructura de red del cliente.`,
       `NVMe-oF end-to-end con soporte FC, iSCSI y RoCE cubre todos los protocolos del entorno. Con escalabilidad hasta ~4 PB efectivos, cubre con margen la proyección de ${proj3y} TB a 3 años.`
     ],
-    fs9500: [
-      `El IBM FlashSystem 9500 es la plataforma all-flash de máxima escala del portfolio IBM. Con requerimientos de ${iLabel} en un entorno${isCritical ? ' de misión crítica' : ' exigente'} de ${servers} servidores, es la plataforma que entrega el headroom necesario sin compromisos.`,
+    fs9500:[
+      `El IBM FlashSystem 9500 es la plataforma all-flash de máxima escala del portfolio IBM. Con requerimientos de ${iLabel} en un entorno${isCritical?' de misión crítica':' exigente'} de ${servers} servidores, es la plataforma que entrega el headroom necesario sin compromisos.`,
       hasDB
-        ? `Para bases de datos${isCritical ? ' críticas' : ''}, ofrece latencias sub-100 µs con NVMe-oF, QoS granular por volumen y compresión adaptativa. El soporte ${pLabel} se entrega nativo sin hardware adicional.`
-        : `Su arquitectura NVMe end-to-end con SCM (Storage Class Memory) entrega throughput máximo para${hasVMs ? ' cargas de virtualización densa' : ' todos los workloads del entorno'}. Compatible con ${hLabel}.`,
-      existingIBM === 'yes'
+        ? `Para bases de datos${isCritical?' críticas':''}, ofrece latencias sub-100 µs con NVMe-oF, QoS granular por volumen y compresión adaptativa. El soporte ${pLabel} se entrega nativo sin hardware adicional.`
+        : `Su arquitectura NVMe end-to-end con SCM entrega throughput máximo para${hasVMs?' cargas de virtualización densa':' todos los workloads del entorno'}. Compatible con ${hLabel}.`,
+      existingIBM==='yes'
         ? `Al tener arrays IBM existentes, el FlashSystem 9500 con IBM Storage Virtualize puede federarlos bajo una sola vista de gestión — los datos del storage viejo quedan accesibles sin migración física.`
         : `Soporta IBM Metro Mirror y Global Mirror para replicación multi-sitio, escalabilidad hasta 32 PB efectivos y se integra nativamente con IBM Spectrum Protect para protección de datos end-to-end.`
     ],
-    sv5100: [
+    sv5100:[
       `El IBM Storage Virtualize (SV5100) combina caché flash NVMe con capacidad HDD de alta densidad aplicando IBM Easy Tier — datos calientes en flash, fríos en HDD, de forma automática y transparente para los ${servers} servidores.`,
-      existingIBM === 'yes'
+      existingIBM==='yes'
         ? `Con arrays IBM existentes en el entorno, el SV5100 es la opción estratégica: IBM Storage Virtualize puede federar los arrays actuales bajo una interfaz unificada sin migración de datos, protegiendo la inversión realizada.`
         : hasBackup
           ? `Para cargas de backup, su motor de deduplicación y compresión reduce el footprint físico significativamente. Soporta IBM Spectrum Protect y Veeam como repositorio de backup de forma nativa.`
           : `Soporta FC, iSCSI, NFS y SMB de forma nativa — la opción más versátil del portfolio IBM para entornos con cargas mixtas como las indicadas en el relevamiento.`,
       `Con soporte ${pLabel} y compatibilidad con ${hLabel}, el SV5100 cubre toda la infraestructura del cliente. Su arquitectura dual-controller activo-activo escala hasta ~2 PB efectivos de forma no disruptiva.`
     ],
-    ibmcos: [
+    ibmcos:[
       `IBM Storage Scale / Cloud Object Storage es la plataforma del portfolio IBM para datos no estructurados a escala masiva. Con una proyección de ${proj3y} TB a 3 años, su arquitectura de escala horizontal crece sin límite práctico agregando nodos sin downtime.`,
       hasBackup
         ? `Para repositorios de backup, IBM COS ofrece la mejor relación TB/costo del portfolio IBM, con políticas de ciclo de vida automatizadas que mueven datos entre tiers caliente, tibio y frío según su antigüedad y frecuencia de acceso.`
         : `Compatible con S3, NFS y SMB, se integra con las principales herramientas de gestión de datos y sirve como repositorio central para archivo de largo plazo y datos de acceso infrecuente.`,
-      `Protección mediante Erasure Coding configurable (equivalente a RAID distribuido), con disponibilidad de datos de 99.999999999%. Ideal como capa de archivo complementaria a una solución FlashSystem de producción.`
+      `Protección mediante Erasure Coding configurable, con disponibilidad de datos de 99.999999999%. Ideal como capa de archivo complementaria a una solución FlashSystem de producción.`
     ]
   };
-
-  return texts[key] || [];
+  return texts[key]||[];
 }
 
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  SPECS
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 function buildSpecs(key) {
   const { currentTB, growthPct, availability, iops, protocol } = state;
-  const proj3y = currentTB * Math.pow(1 + growthPct / 100, 3);
-  const recCap = Math.ceil(proj3y * 1.3);
+  const recCap = Math.ceil(currentTB * Math.pow(1+growthPct/100,3) * 1.3);
   const isCritical = availability === 'critical';
-
-  const iopsMap = {
-    low: '< 10K IOPS', medium: 'hasta 50K IOPS',
-    high: 'hasta 200K IOPS', veryhigh: '> 200K IOPS'
-  };
-  const protoMap = { fc: 'Fibre Channel', iscsi: 'iSCSI', nvme: 'NVMe-oF', any: 'FC / iSCSI / NVMe-oF' };
+  const protoVal   = PROTO_LBL[protocol] || 'FC / iSCSI / NVMe-oF';
 
   const map = {
-    fs5300: [
-      { key: 'Capacidad sugerida', val: `${recCap} TB (efectivo)` },
-      { key: 'Tipo de drive',      val: 'NVMe Flash (SSD)' },
-      { key: 'RAID / Protección',  val: 'RAID 5 / RAID 6' },
-      { key: 'Redundancia',        val: 'Dual controller AA' },
-      { key: 'Protocolo primario', val: protoMap[protocol] || 'FC / iSCSI / NVMe-oF' },
-      { key: 'IOPS destino',       val: iopsMap[iops] || '—' },
-      { key: 'Latencia típica',    val: '< 200 µs' },
-      { key: 'Escalabilidad máx.', val: '~1 PB efectivo' }
-    ],
-    fs7300: [
-      { key: 'Capacidad sugerida', val: `${recCap} TB (efectivo)` },
-      { key: 'Tipo de drive',      val: 'NVMe Flash (SSD)' },
-      { key: 'RAID / Protección',  val: isCritical ? 'RAID 6 + HyperSwap' : 'RAID 5 / RAID 6' },
-      { key: 'Redundancia',        val: 'Dual controller AA' },
-      { key: 'Protocolo primario', val: protoMap[protocol] || 'FC / iSCSI / NVMe-oF / RoCE' },
-      { key: 'IOPS destino',       val: iopsMap[iops] || '—' },
-      { key: 'Latencia típica',    val: '< 150 µs' },
-      { key: 'Escalabilidad máx.', val: '~4 PB efectivo' }
-    ],
-    fs9500: [
-      { key: 'Capacidad sugerida', val: `${recCap} TB (efectivo)` },
-      { key: 'Tipo de drive',      val: 'NVMe Flash (SCM + QLC)' },
-      { key: 'RAID / Protección',  val: 'RAID 5/6 + Repl. síncrona' },
-      { key: 'Redundancia',        val: 'Dual controller AA + Metro Mirror' },
-      { key: 'Protocolo primario', val: protoMap[protocol] || 'FC / iSCSI / NVMe-oF / FCoE' },
-      { key: 'IOPS destino',       val: iopsMap[iops] || '—' },
-      { key: 'Latencia típica',    val: '< 100 µs' },
-      { key: 'Escalabilidad máx.', val: '~32 PB efectivo' }
-    ],
-    sv5100: [
-      { key: 'Capacidad sugerida', val: `${recCap} TB (efectivo)` },
-      { key: 'Tipo de drive',      val: 'NVMe SSD cache + SAS/SATA HDD' },
-      { key: 'RAID / Protección',  val: 'RAID 5 / RAID 6 + Easy Tier' },
-      { key: 'Redundancia',        val: 'Dual controller AA' },
-      { key: 'Protocolo primario', val: protoMap[protocol] || 'FC / iSCSI / NFS / SMB' },
-      { key: 'IOPS destino',       val: iopsMap[iops] || '—' },
-      { key: 'Tiering automático', val: 'SSD / SAS / SATA / Cloud' },
-      { key: 'Escalabilidad máx.', val: '~2 PB efectivo' }
-    ],
-    ibmcos: [
-      { key: 'Capacidad sugerida', val: `${recCap} TB (raw)` },
-      { key: 'Tipo de drive',      val: 'SATA HDD / NVMe cache' },
-      { key: 'RAID / Protección',  val: 'Erasure Coding (configurable)' },
-      { key: 'Redundancia',        val: 'Multi-nodo / Multi-sitio' },
-      { key: 'Protocolo primario', val: 'S3, NFS, SMB, HDFS' },
-      { key: 'IOPS destino',       val: iopsMap[iops] || '—' },
-      { key: 'Ciclo de vida',      val: 'Tiering caliente/tibio/frío' },
-      { key: 'Escalabilidad máx.', val: 'Sin límite (exabytes)' }
-    ]
+    fs5300:[ {key:'Capacidad sugerida',val:`${recCap} TB (efectivo)`},{key:'Tipo de drive',val:'NVMe Flash (SSD)'},{key:'RAID / Protección',val:'RAID 5 / RAID 6'},{key:'Redundancia',val:'Dual controller AA'},{key:'Protocolo',val:protoVal},{key:'IOPS destino',val:IOPS_LBL[iops]||'—'},{key:'Latencia típica',val:'< 200 µs'},{key:'Escalabilidad máx.',val:'~1 PB efectivo'} ],
+    fs7300:[ {key:'Capacidad sugerida',val:`${recCap} TB (efectivo)`},{key:'Tipo de drive',val:'NVMe Flash (SSD)'},{key:'RAID / Protección',val:isCritical?'RAID 6 + HyperSwap':'RAID 5 / RAID 6'},{key:'Redundancia',val:'Dual controller AA'},{key:'Protocolo',val:protoVal},{key:'IOPS destino',val:IOPS_LBL[iops]||'—'},{key:'Latencia típica',val:'< 150 µs'},{key:'Escalabilidad máx.',val:'~4 PB efectivo'} ],
+    fs9500:[ {key:'Capacidad sugerida',val:`${recCap} TB (efectivo)`},{key:'Tipo de drive',val:'NVMe Flash (SCM + QLC)'},{key:'RAID / Protección',val:'RAID 5/6 + Repl. síncrona'},{key:'Redundancia',val:'Dual controller AA + Metro Mirror'},{key:'Protocolo',val:protoVal},{key:'IOPS destino',val:IOPS_LBL[iops]||'—'},{key:'Latencia típica',val:'< 100 µs'},{key:'Escalabilidad máx.',val:'~32 PB efectivo'} ],
+    sv5100:[ {key:'Capacidad sugerida',val:`${recCap} TB (efectivo)`},{key:'Tipo de drive',val:'NVMe SSD cache + SAS/SATA HDD'},{key:'RAID / Protección',val:'RAID 5 / RAID 6 + Easy Tier'},{key:'Redundancia',val:'Dual controller AA'},{key:'Protocolo',val:protoVal},{key:'IOPS destino',val:IOPS_LBL[iops]||'—'},{key:'Tiering automático',val:'SSD / SAS / SATA / Cloud'},{key:'Escalabilidad máx.',val:'~2 PB efectivo'} ],
+    ibmcos:[ {key:'Capacidad sugerida',val:`${recCap} TB (raw)`},{key:'Tipo de drive',val:'SATA HDD / NVMe cache'},{key:'RAID / Protección',val:'Erasure Coding (configurable)'},{key:'Redundancia',val:'Multi-nodo / Multi-sitio'},{key:'Protocolo',val:'S3, NFS, SMB, HDFS'},{key:'IOPS destino',val:IOPS_LBL[iops]||'—'},{key:'Ciclo de vida',val:'Tiering caliente/tibio/frío'},{key:'Escalabilidad máx.',val:'Sin límite (exabytes)'} ]
   };
-
-  return map[key] || [];
+  return map[key]||[];
 }
 
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  BUILD RESULTS
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 function buildResults() {
   const { clientName, currentTB, growthPct, servers, loads, availability, budget, iops, protocol, hypervisor, existingIBM } = state;
-
-  const proj3y = currentTB * Math.pow(1 + growthPct / 100, 3);
+  const proj3y = currentTB * Math.pow(1+growthPct/100,3);
   const recCap = Math.ceil(proj3y * 1.3);
+  const dateStr = new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'});
 
   // Client band
-  const dateStr = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
-  document.getElementById('rcb-client').textContent = clientName;
-  document.getElementById('rcb-date').textContent   = dateStr;
+  document.getElementById('rcb-client').textContent    = clientName;
+  document.getElementById('rcb-date').textContent      = dateStr;
   document.getElementById('print-client-name').textContent = clientName;
 
   // Projection
@@ -1276,24 +1478,17 @@ function buildResults() {
   document.getElementById('proj-rec').innerHTML     = `${fmtTB(recCap)}<span>TB</span>`;
 
   // Context tags
-  const iopsLabels  = { low: 'IOPS Baja', medium: 'IOPS Media', high: 'IOPS Alta', veryhigh: 'IOPS Muy Alta' };
-  const protoLabels = { fc: 'Fibre Channel', iscsi: 'iSCSI', nvme: 'NVMe-oF', any: 'Sin preferencia proto.' };
-  const hvLabels    = { vmware: 'VMware vSphere', hyperv: 'Hyper-V', bare: 'Bare Metal', mixed: 'Mixto' };
-  const ibmLabels   = { yes: 'IBM Storage existente', no: 'Entorno nuevo' };
+  document.getElementById('context-tags').innerHTML = [
+    { label: IOPS_LBL[iops],          hi: iops==='veryhigh'||iops==='high' },
+    { label: PROTO_LBL[protocol],     hi: protocol==='nvme' },
+    { label: HV_LBL[hypervisor],      hi: hypervisor==='vmware' },
+    { label: IBM_LBL[existingIBM],    hi: existingIBM==='yes' }
+  ].map(t => `<div class="ctx-tag${t.hi?' highlight':''}">${t.label}</div>`).join('');
 
-  const tags = [
-    { label: iopsLabels[iops], hi: iops === 'veryhigh' || iops === 'high' },
-    { label: protoLabels[protocol], hi: protocol === 'nvme' },
-    { label: hvLabels[hypervisor], hi: hypervisor === 'vmware' },
-    { label: ibmLabels[existingIBM], hi: existingIBM === 'yes' }
-  ];
-  document.getElementById('context-tags').innerHTML =
-    tags.map(t => `<div class="ctx-tag${t.hi ? ' highlight' : ''}">${t.label}</div>`).join('');
-
-  // Cards
-  const ranking    = scoreRecommendations();
-  const badgeClass = ['best', 'alt', 'economic'];
-  const badgeLabel = { best: 'Mejor opción', alt: 'Alternativa sólida', economic: 'Opción económica' };
+  // Scoring
+  const { ranking, scoreMap, topScore } = scoreRecommendations();
+  const badgeClass = ['best','alt','economic'];
+  const badgeLabel = { best:'Mejor opción', alt:'Alternativa sólida', economic:'Opción económica' };
 
   const container = document.getElementById('cards-container');
   container.innerHTML = '';
@@ -1301,6 +1496,7 @@ function buildResults() {
   ranking.forEach((key, idx) => {
     const sol   = IBM_SOLUTIONS[key];
     const bc    = badgeClass[idx];
+    const fitPct= Math.round((scoreMap[key]/topScore)*100);
     const whys  = buildWhyText(key);
     const specs = buildSpecs(key);
 
@@ -1309,81 +1505,105 @@ function buildResults() {
     card.innerHTML = `
       <div class="card-header">
         <div class="card-title-group">
-          <div class="card-rank">Opción #${idx + 1} · ${sol.family}</div>
+          <div class="card-rank">Opción #${idx+1} · ${sol.family}</div>
           <div class="card-name">${sol.name}</div>
           <div class="card-model">${sol.tier}</div>
           <div class="card-model" style="margin-top:4px;color:var(--blue-light);font-size:10px;letter-spacing:0.1em;">${sol.tagline}</div>
         </div>
-        <div class="badge badge-${bc}">${badgeLabel[bc]}</div>
+        <div class="card-header-right">
+          <div class="badge badge-${bc}">${badgeLabel[bc]}</div>
+          <div class="fit-bar-wrap">
+            <span class="fit-bar-label">Fit</span>
+            <div class="fit-track"><div class="fit-fill" style="width:0%" data-pct="${fitPct}"></div></div>
+            <span class="fit-pct">${fitPct}%</span>
+          </div>
+        </div>
       </div>
       <div class="card-body">
         <div class="card-section">
           <div class="card-section-label">Por qué encaja con este entorno</div>
-          <div class="card-why">${whys.map(w => `&#9632;&nbsp;${w}`).join('<br/><br/>')}</div>
+          <div class="card-why">${whys.map(w=>`&#9632;&nbsp;${w}`).join('<br/><br/>')}</div>
         </div>
         <div class="card-section">
           <div class="card-section-label">Especificaciones sugeridas</div>
-          <div class="specs-grid">
-            ${specs.map(s => `<div class="spec-item"><div class="spec-key">${s.key}</div><div class="spec-val">${s.val}</div></div>`).join('')}
-          </div>
+          <div class="specs-grid">${specs.map(s=>`<div class="spec-item"><div class="spec-key">${s.key}</div><div class="spec-val">${s.val}</div></div>`).join('')}</div>
         </div>
       </div>
     `;
     container.appendChild(card);
   });
 
-  // Summary
-  const aMap = { basic: 'Básico', medium: 'Medio', critical: 'Crítico' };
-  const bMap = { low: 'Bajo', medium: 'Medio', high: 'Alto' };
-  const lMap = { vms: 'Máquinas Virtuales', backup: 'Backup/Respaldo', files: 'Archivos/NAS', db: 'Bases de Datos' };
+  // Animate fit bars after render
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.querySelectorAll('.fit-fill').forEach(el => {
+      el.style.width = el.dataset.pct + '%';
+    });
+  }));
 
+  // Summary with edit buttons
+  const lMap = { vms:'Máquinas Virtuales', backup:'Backup/Respaldo', files:'Archivos/NAS', db:'Bases de Datos' };
   const summaryItems = [
-    { key: 'Cliente',           val: clientName },
-    { key: 'Servidores',        val: servers },
-    { key: 'Datos actuales',    val: `${currentTB} TB` },
-    { key: 'Crecimiento anual', val: `${growthPct}%` },
-    { key: 'Proyección 3 años', val: `${fmtTB(proj3y)} TB` },
-    { key: 'Cap. recomendada',  val: `${fmtTB(recCap)} TB (+30%)` },
-    { key: 'Tipo de carga',     val: loads.map(l => lMap[l]).join(', ') },
-    { key: 'IOPS requeridas',   val: iopsLabels[iops] },
-    { key: 'Protocolo',         val: protoLabels[protocol] },
-    { key: 'Hipervisor',        val: hvLabels[hypervisor] },
-    { key: 'IBM existente',     val: ibmLabels[existingIBM] },
-    { key: 'Disponibilidad',    val: aMap[availability] },
-    { key: 'Presupuesto',       val: bMap[budget] }
+    { key:'Cliente',          val:clientName,                     stateKey:'clientName' },
+    { key:'Servidores',       val:servers,                        stateKey:'servers' },
+    { key:'Datos actuales',   val:`${currentTB} TB`,              stateKey:'currentTB' },
+    { key:'Crecimiento anual',val:`${growthPct}%`,                stateKey:'growthPct' },
+    { key:'Proyección 3 años',val:`${fmtTB(proj3y)} TB`,          stateKey:null },
+    { key:'Cap. recomendada', val:`${fmtTB(recCap)} TB (+30%)`,   stateKey:null },
+    { key:'Tipo de carga',    val:loads.map(l=>lMap[l]).join(', '),stateKey:'loads' },
+    { key:'IOPS requeridas',  val:IOPS_LBL[iops],                 stateKey:'iops' },
+    { key:'Protocolo',        val:PROTO_LBL[protocol],            stateKey:'protocol' },
+    { key:'Hipervisor',       val:HV_LBL[hypervisor],             stateKey:'hypervisor' },
+    { key:'IBM existente',    val:IBM_LBL[existingIBM],           stateKey:'existingIBM' },
+    { key:'Disponibilidad',   val:AVAIL_LBL[availability],        stateKey:'availability' },
+    { key:'Presupuesto',      val:BUDGET_LBL[budget],             stateKey:'budget' }
   ];
 
-  document.getElementById('summary-grid').innerHTML =
-    summaryItems.map(d => `<div class="summary-item"><div class="summary-key">${d.key}</div><div class="summary-val">${d.val}</div></div>`).join('');
+  document.getElementById('summary-grid').innerHTML = summaryItems.map(d => {
+    const step = d.stateKey ? STATE_STEP_MAP[d.stateKey] : null;
+    const editBtn = step ? `<button class="edit-btn no-print" onclick="editStep(${step})">editar</button>` : '';
+    return `<div class="summary-item">${editBtn}<div class="summary-key">${d.key}</div><div class="summary-val">${d.val}</div></div>`;
+  }).join('');
 
   document.getElementById('results-sub').textContent =
-    `${clientName} · ${servers} servidor${servers !== 1 ? 'es' : ''} · ${currentTB} TB actuales · ${dateStr}`;
+    `${clientName} · ${servers} servidor${servers!==1?'es':''} · ${currentTB} TB actuales · ${dateStr}`;
 }
 
+// ══════════════════════════════════════════════════
+//  EDIT FROM RESULTS
+// ══════════════════════════════════════════════════
+function editStep(step) {
+  haptic(8);
+  document.getElementById('results-section').classList.remove('show');
+  document.getElementById('wizard-layout').style.display = '';
+  document.getElementById('progress-wrap').style.display  = '';
+  showStep(step, 'bwd');
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+// ══════════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════════
 function fmtTB(n) {
-  if (n >= 1000) return (n / 1000).toFixed(1) + ' K';
+  if (n >= 1000) return (n/1000).toFixed(1)+' K';
   return Math.ceil(n).toString();
 }
 
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  ACTIONS
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 function newSimulation() {
-  Object.keys(state).forEach(k => { state[k] = Array.isArray(state[k]) ? [] : null; });
-  state.clientName = '';
-  ['client-name','num-servers','current-tb','growth-pct'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  document.querySelectorAll('#step-4 input[type="checkbox"]').forEach(c => c.checked = false);
-  ['iops','protocol','hypervisor','existing-ibm','avail','budget'].forEach(name => {
-    document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.checked = false);
+  haptic(10);
+  Object.keys(state).forEach(k => { state[k] = Array.isArray(state[k]) ? [] : (k==='clientName'?'':null); });
+  ['client-name','num-servers','current-tb','growth-pct'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.querySelectorAll('#step-4 input[type="checkbox"]').forEach(c=>c.checked=false);
+  ['iops','protocol','hypervisor','existing-ibm','avail','budget'].forEach(n=>{
+    document.querySelectorAll(`input[name="${n}"]`).forEach(r=>r.checked=false);
   });
   document.getElementById('results-section').classList.remove('show');
-  document.getElementById('wizard-container').style.display = '';
-  document.getElementById('progress-wrap').style.display    = '';
-  showStep(1);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.getElementById('wizard-layout').style.display = '';
+  document.getElementById('progress-wrap').style.display  = '';
+  updateSidebar();
+  showStep(1, 'bwd');
 }
 
 function exportPDF() { window.print(); }
