@@ -53,66 +53,51 @@
     .card-why, .spec-val, .summary-val, .proj-value { color: #000 !important; }
     .card-rank, .card-model, .spec-key, .summary-key,
     .proj-label, .card-section-label, .results-title { color: #555 !important; }
+    .print-client-header { display: block !important; }
   }
   .print-only { display: none; }
+  .print-client-header { display: none; }
 
   /* ── Header ── */
   header {
-    width: 100%;
-    max-width: 880px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 28px 0 24px;
-    border-bottom: 1px solid var(--border2);
-    margin-bottom: 36px;
-    flex-wrap: wrap;
-    gap: 12px;
+    width: 100%; max-width: 880px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 28px 0 24px; border-bottom: 1px solid var(--border2);
+    margin-bottom: 36px; flex-wrap: wrap; gap: 12px;
   }
-
   .logo { display: flex; align-items: center; gap: 12px; }
-
   .logo-icon {
-    width: 38px; height: 38px;
-    background: var(--blue);
+    width: 38px; height: 38px; background: var(--blue);
     display: flex; align-items: center; justify-content: center;
     clip-path: polygon(0 0,85% 0,100% 15%,100% 100%,15% 100%,0 85%);
   }
   .logo-icon svg { width: 22px; height: 22px; fill: white; }
-
   .logo-text { font-size: 18px; font-weight: 700; letter-spacing: 0.18em; }
   .logo-text span { color: var(--blue-light); }
-
   .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
   .header-badge {
     font-size: 10px; letter-spacing: 0.12em; color: var(--text-dim);
     border: 1px solid var(--border2); padding: 4px 10px; text-transform: uppercase;
   }
-  .header-ibm {
-    font-size: 9px; letter-spacing: 0.1em; color: var(--blue-light);
-    text-transform: uppercase; opacity: 0.7;
-  }
+  .header-ibm { font-size: 9px; letter-spacing: 0.1em; color: var(--blue-light); text-transform: uppercase; opacity: 0.7; }
 
   /* ── App ── */
   #app { width: 100%; max-width: 880px; }
 
   /* ── Progress ── */
   .progress-wrap { margin-bottom: 36px; }
-  .progress-header {
-    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
-  }
+  .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .progress-label { font-size: 11px; letter-spacing: 0.14em; color: var(--text-dim); text-transform: uppercase; }
   .progress-counter { font-size: 11px; color: var(--blue-light); letter-spacing: 0.1em; }
   .progress-track { height: 3px; background: var(--surface3); overflow: hidden; }
   .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--blue), var(--blue-light));
-    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
-    width: 0%;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1); width: 0%;
   }
-  .steps-dots { display: flex; gap: 8px; margin-top: 14px; }
+  .steps-dots { display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
   .step-dot {
-    width: 8px; height: 8px;
+    width: 7px; height: 7px;
     border: 1px solid var(--border2); background: transparent;
     transition: all 0.3s;
     clip-path: polygon(50% 0%,100% 50%,50% 100%,0% 50%);
@@ -122,10 +107,8 @@
 
   /* ── Step card ── */
   .step-card {
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    padding: 40px 44px;
-    display: none;
+    background: var(--surface); border: 1px solid var(--border2);
+    padding: 40px 44px; display: none;
     animation: fadeSlide 0.35s ease forwards;
     position: relative; overflow: hidden;
   }
@@ -140,8 +123,8 @@
     to   { opacity: 1; transform: translateX(0); }
   }
 
-  .step-number { font-size: 10px; letter-spacing: 0.2em; color: var(--blue-light); text-transform: uppercase; margin-bottom: 8px; }
-  .step-title  { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 6px; letter-spacing: 0.04em; }
+  .step-number   { font-size: 10px; letter-spacing: 0.2em; color: var(--blue-light); text-transform: uppercase; margin-bottom: 8px; }
+  .step-title    { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 6px; letter-spacing: 0.04em; }
   .step-subtitle { font-size: 12px; color: var(--text-dim); margin-bottom: 32px; letter-spacing: 0.06em; }
 
   /* ── Inputs ── */
@@ -152,7 +135,7 @@
     color: var(--text-mid); text-transform: uppercase; margin-bottom: 10px;
   }
 
-  input[type="number"] {
+  input[type="number"], input[type="text"] {
     width: 100%; background: var(--surface2); border: 1px solid var(--border2);
     color: var(--text); font-family: var(--font); font-size: 20px;
     padding: 14px 18px; outline: none;
@@ -163,15 +146,10 @@
   input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
   input:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(0,87,184,0.18); }
   input::placeholder { color: var(--border2); }
-
   .input-hint { font-size: 10px; color: var(--text-dim); margin-top: 6px; letter-spacing: 0.08em; }
 
   /* ── Checkbox grid ── */
-  .checkbox-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-    gap: 10px;
-  }
+  .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px,1fr)); gap: 10px; }
   .check-item { position: relative; }
   .check-item input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
   .check-item label {
@@ -182,9 +160,7 @@
     text-transform: none; font-size: 13px; letter-spacing: 0.06em;
     color: var(--text-mid); margin: 0; user-select: none;
   }
-  .check-item input:checked + label {
-    border-color: var(--blue); background: rgba(0,87,184,0.1); color: var(--text);
-  }
+  .check-item input:checked + label { border-color: var(--blue); background: rgba(0,87,184,0.1); color: var(--text); }
   .check-box {
     width: 14px; height: 14px; border: 1px solid var(--border2);
     flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
@@ -200,6 +176,7 @@
 
   /* ── Radio cards ── */
   .radio-cards { display: grid; gap: 10px; }
+  .radio-cards-2col { grid-template-columns: 1fr 1fr; }
   .radio-card { position: relative; }
   .radio-card input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
   .radio-card label {
@@ -208,11 +185,9 @@
     padding: 16px 20px; cursor: pointer;
     transition: border-color 0.2s, background 0.2s;
     text-transform: none; font-size: 13px; letter-spacing: 0.04em;
-    color: var(--text-mid); margin: 0; user-select: none;
+    color: var(--text-mid); margin: 0; user-select: none; height: 100%;
   }
-  .radio-card input:checked + label {
-    border-color: var(--blue); background: rgba(0,87,184,0.1); color: var(--text);
-  }
+  .radio-card input:checked + label { border-color: var(--blue); background: rgba(0,87,184,0.1); color: var(--text); }
   .radio-indicator {
     width: 16px; height: 16px; border: 1px solid var(--border2); border-radius: 50%;
     flex-shrink: 0; margin-top: 2px; transition: all 0.2s;
@@ -225,22 +200,36 @@
   .radio-card-title { font-size: 14px; color: var(--text); margin-bottom: 3px; }
   .radio-card-desc  { font-size: 11px; color: var(--text-dim); letter-spacing: 0.06em; }
 
-  /* ── Buttons ── */
-  .nav-buttons {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-top: 36px; gap: 12px;
+  /* ── IOPS cards ── */
+  .iops-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px,1fr)); gap: 10px; }
+  .iops-card { position: relative; }
+  .iops-card input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+  .iops-card label {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 8px; background: var(--surface2); border: 1px solid var(--border2);
+    padding: 20px 14px; cursor: pointer; text-align: center;
+    transition: border-color 0.2s, background 0.2s;
+    color: var(--text-mid); margin: 0; user-select: none; min-height: 100px;
   }
+  .iops-card input:checked + label { border-color: var(--blue); background: rgba(0,87,184,0.1); color: var(--text); }
+  .iops-value {
+    font-size: 22px; font-weight: 700; color: var(--text-dim); letter-spacing: 0.04em;
+    transition: color 0.2s;
+  }
+  .iops-card input:checked + label .iops-value { color: var(--blue-light); }
+  .iops-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .iops-range { font-size: 10px; color: var(--text-dim); letter-spacing: 0.06em; margin-top: 2px; }
+
+  /* ── Buttons ── */
+  .nav-buttons { display: flex; justify-content: space-between; align-items: center; margin-top: 36px; gap: 12px; }
   .btn {
     font-family: var(--font); font-size: 12px; letter-spacing: 0.16em;
     text-transform: uppercase; padding: 14px 28px; border: 1px solid;
     cursor: pointer; transition: all 0.2s; outline: none; position: relative; overflow: hidden;
   }
-  .btn::after {
-    content: ''; position: absolute; inset: 0;
-    background: rgba(255,255,255,0.05); opacity: 0; transition: opacity 0.2s;
-  }
+  .btn::after { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.05); opacity: 0; transition: opacity 0.2s; }
   .btn:hover::after { opacity: 1; }
-  .btn-primary { background: var(--blue); border-color: var(--blue); color: white; }
+  .btn-primary  { background: var(--blue); border-color: var(--blue); color: white; }
   .btn-primary:hover { background: var(--blue-light); border-color: var(--blue-light); }
   .btn-secondary { background: transparent; border-color: var(--border2); color: var(--text-dim); }
   .btn-secondary:hover { border-color: var(--text-dim); color: var(--text); }
@@ -272,12 +261,19 @@
   #results-section { width: 100%; max-width: 880px; display: none; }
   #results-section.show { display: block; animation: fadeSlide 0.4s ease forwards; }
 
-  .results-header {
-    margin-bottom: 28px; padding-bottom: 22px; border-bottom: 1px solid var(--border2);
+  .results-client-band {
+    background: var(--surface2); border: 1px solid var(--border2);
+    border-left: 3px solid var(--blue-light);
+    padding: 14px 22px; margin-bottom: 24px;
+    display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
   }
-  .results-title { font-size: 10px; letter-spacing: 0.22em; color: var(--blue-light); text-transform: uppercase; margin-bottom: 8px; }
+  .rcb-label { font-size: 10px; letter-spacing: 0.14em; color: var(--text-dim); text-transform: uppercase; }
+  .rcb-value { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: 0.06em; margin-top: 2px; }
+
+  .results-header { margin-bottom: 28px; padding-bottom: 22px; border-bottom: 1px solid var(--border2); }
+  .results-title    { font-size: 10px; letter-spacing: 0.22em; color: var(--blue-light); text-transform: uppercase; margin-bottom: 8px; }
   .results-headline { font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
-  .results-sub { font-size: 12px; color: var(--text-dim); letter-spacing: 0.06em; }
+  .results-sub      { font-size: 12px; color: var(--text-dim); letter-spacing: 0.06em; }
 
   /* ── Projection band ── */
   .projection-band {
@@ -292,6 +288,15 @@
   .proj-value { font-size: 22px; font-weight: 700; color: var(--text); }
   .proj-value span { font-size: 12px; color: var(--text-dim); margin-left: 4px; }
 
+  /* ── Context tags ── */
+  .context-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+  .ctx-tag {
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    border: 1px solid var(--border2); color: var(--text-dim); padding: 5px 12px;
+    background: var(--surface2);
+  }
+  .ctx-tag.highlight { border-color: var(--blue-dim); color: var(--blue-light); }
+
   /* ── Result cards ── */
   .result-card {
     background: var(--surface); border: 1px solid var(--border2);
@@ -301,10 +306,8 @@
   .result-card:nth-child(1) { animation-delay: 0.05s; }
   .result-card:nth-child(2) { animation-delay: 0.18s; }
   .result-card:nth-child(3) { animation-delay: 0.31s; }
-  .result-card.best { border-color: var(--blue); }
-  .result-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  }
+  .result-card.best    { border-color: var(--blue); }
+  .result-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
   .result-card.best::before     { background: linear-gradient(90deg, var(--blue), var(--blue-light)); }
   .result-card.alt::before      { background: linear-gradient(90deg, var(--green), transparent); }
   .result-card.economic::before { background: linear-gradient(90deg, var(--amber), transparent); }
@@ -329,27 +332,19 @@
 
   .card-body { padding: 22px 28px; }
   .card-section { margin-bottom: 22px; }
-  .card-section-label {
-    font-size: 10px; letter-spacing: 0.16em; color: var(--blue-light);
-    text-transform: uppercase; margin-bottom: 10px;
-  }
+  .card-section-label { font-size: 10px; letter-spacing: 0.16em; color: var(--blue-light); text-transform: uppercase; margin-bottom: 10px; }
   .card-why { font-size: 13px; color: var(--text-mid); line-height: 1.75; letter-spacing: 0.03em; }
 
   /* ── Specs ── */
-  .specs-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 10px;
-  }
+  .specs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px,1fr)); gap: 10px; }
   .spec-item { background: var(--surface2); border: 1px solid var(--border2); padding: 12px 14px; }
   .spec-key  { font-size: 10px; letter-spacing: 0.12em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 4px; }
   .spec-val  { font-size: 13px; color: var(--text); font-weight: 600; letter-spacing: 0.04em; }
 
   /* ── Summary ── */
-  .summary-section {
-    background: var(--surface2); border: 1px solid var(--border2);
-    padding: 22px 28px; margin-bottom: 28px;
-  }
+  .summary-section { background: var(--surface2); border: 1px solid var(--border2); padding: 22px 28px; margin-bottom: 28px; }
   .summary-title { font-size: 10px; letter-spacing: 0.18em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 16px; }
-  .summary-grid  { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+  .summary-grid  { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 14px; }
   .summary-key   { font-size: 10px; letter-spacing: 0.12em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 3px; }
   .summary-val   { font-size: 13px; color: var(--text); letter-spacing: 0.04em; }
 
@@ -372,6 +367,8 @@
     .proj-stat + .proj-stat { border-left: none; border-top: 1px solid var(--border2); padding-left: 0; padding-top: 12px; }
     .nav-buttons { flex-wrap: wrap; }
     header { padding: 20px 0 18px; }
+    .radio-cards-2col { grid-template-columns: 1fr; }
+    .iops-grid { grid-template-columns: 1fr 1fr; }
   }
 </style>
 </head>
@@ -392,49 +389,61 @@
 </header>
 
 <!-- Print header -->
-<div class="print-only" style="padding:20px 0 16px;border-bottom:2px solid #000;margin-bottom:24px;width:100%;max-width:880px;">
+<div class="print-only" style="padding:20px 0 16px;border-bottom:2px solid #000;margin-bottom:20px;width:100%;max-width:880px;">
   <div style="font-size:20px;font-weight:700;letter-spacing:0.14em;">CORESOLUTIONS</div>
-  <div style="font-size:11px;color:#555;letter-spacing:0.08em;margin-top:4px;">IBM Storage Sizing Simulator — Recomendación Generada</div>
+  <div style="font-size:11px;color:#555;letter-spacing:0.08em;margin-top:4px;">IBM Storage Sizing Simulator — Recomendación Técnica</div>
+</div>
+<!-- Client name for print -->
+<div class="print-client-header" style="width:100%;max-width:880px;margin-bottom:24px;padding:12px 18px;border:1px solid #ccc;">
+  <div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:3px;">Cliente / Oportunidad</div>
+  <div id="print-client-name" style="font-size:18px;font-weight:700;color:#000;"></div>
 </div>
 
 <div id="app">
 
-  <!-- ── WIZARD ── -->
+  <!-- ══════════════════ WIZARD ══════════════════ -->
   <div id="wizard-container" class="no-print">
 
     <div class="progress-wrap" id="progress-wrap">
       <div class="progress-header">
         <span class="progress-label">Progreso del análisis</span>
-        <span class="progress-counter" id="progress-counter">Paso 1 de 6</span>
+        <span class="progress-counter" id="progress-counter">Paso 1 de 10</span>
       </div>
-      <div class="progress-track">
-        <div class="progress-fill" id="progress-fill"></div>
-      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
       <div class="steps-dots" id="steps-dots"></div>
     </div>
 
-    <!-- Paso 1 — Servidores -->
+    <!-- ── Paso 1: Datos del cliente ── -->
     <div class="step-card active" id="step-1">
       <div class="corner-deco"></div>
-      <div class="step-number">Paso 01 / 06</div>
-      <div class="step-title">Infraestructura del cliente</div>
-      <div class="step-subtitle">Información base del entorno a dimensionar</div>
+      <div class="step-number">Paso 01 / 10</div>
+      <div class="step-title">Datos del cliente</div>
+      <div class="step-subtitle">Identificación de la oportunidad y base del entorno</div>
+
+      <div class="field-group">
+        <label for="client-name">Nombre del cliente / oportunidad</label>
+        <input type="text" id="client-name" placeholder="ej. Banco Nacional S.A." maxlength="120" />
+        <div class="input-hint">&#9632; Aparecerá en el encabezado del PDF exportado</div>
+        <div class="error-msg" id="err-client">Ingresa el nombre del cliente o la oportunidad</div>
+      </div>
+
       <div class="field-group">
         <label for="num-servers">Número de servidores</label>
         <input type="number" id="num-servers" placeholder="ej. 12" min="1" max="9999" />
         <div class="input-hint">&#9632; Servidores físicos o virtualizados que accederán al storage</div>
         <div class="error-msg" id="err-servers">Ingresa un número válido mayor a 0</div>
       </div>
+
       <div class="nav-buttons">
         <span></span>
         <button class="btn btn-primary" onclick="nextStep(1)">Continuar <span class="btn-icon">›</span></button>
       </div>
     </div>
 
-    <!-- Paso 2 — TB actuales -->
+    <!-- ── Paso 2: TB actuales ── -->
     <div class="step-card" id="step-2">
       <div class="corner-deco"></div>
-      <div class="step-number">Paso 02 / 06</div>
+      <div class="step-number">Paso 02 / 10</div>
       <div class="step-title">Volumen de datos</div>
       <div class="step-subtitle">Capacidad actual que el cliente necesita gestionar</div>
       <div class="field-group">
@@ -449,10 +458,10 @@
       </div>
     </div>
 
-    <!-- Paso 3 — Crecimiento -->
+    <!-- ── Paso 3: Crecimiento ── -->
     <div class="step-card" id="step-3">
       <div class="corner-deco"></div>
-      <div class="step-number">Paso 03 / 06</div>
+      <div class="step-number">Paso 03 / 10</div>
       <div class="step-title">Proyección de crecimiento</div>
       <div class="step-subtitle">Estimado anual de incremento en datos</div>
       <div class="field-group">
@@ -467,10 +476,10 @@
       </div>
     </div>
 
-    <!-- Paso 4 — Tipo de carga -->
+    <!-- ── Paso 4: Tipo de carga ── -->
     <div class="step-card" id="step-4">
       <div class="corner-deco"></div>
-      <div class="step-number">Paso 04 / 06</div>
+      <div class="step-number">Paso 04 / 10</div>
       <div class="step-title">Tipo de carga principal</div>
       <div class="step-subtitle">Selecciona todas las que apliquen al entorno del cliente</div>
       <div class="checkbox-grid">
@@ -498,10 +507,202 @@
       </div>
     </div>
 
-    <!-- Paso 5 — Disponibilidad -->
+    <!-- ── Paso 5: IOPS requeridas ── -->
     <div class="step-card" id="step-5">
       <div class="corner-deco"></div>
-      <div class="step-number">Paso 05 / 06</div>
+      <div class="step-number">Paso 05 / 10</div>
+      <div class="step-title">IOPS requeridas</div>
+      <div class="step-subtitle">Intensidad de operaciones de entrada/salida que el entorno demanda</div>
+      <div class="iops-grid">
+        <div class="iops-card">
+          <input type="radio" name="iops" id="iops-low" value="low" />
+          <label for="iops-low">
+            <div class="iops-value">&lt; 10K</div>
+            <div class="iops-label">Baja</div>
+            <div class="iops-range">Backup, archivo, NAS general</div>
+          </label>
+        </div>
+        <div class="iops-card">
+          <input type="radio" name="iops" id="iops-medium" value="medium" />
+          <label for="iops-medium">
+            <div class="iops-value">10K–50K</div>
+            <div class="iops-label">Media</div>
+            <div class="iops-range">VMs de uso general, ERP</div>
+          </label>
+        </div>
+        <div class="iops-card">
+          <input type="radio" name="iops" id="iops-high" value="high" />
+          <label for="iops-high">
+            <div class="iops-value">50K–200K</div>
+            <div class="iops-label">Alta</div>
+            <div class="iops-range">DBs productivas, virt. densa</div>
+          </label>
+        </div>
+        <div class="iops-card">
+          <input type="radio" name="iops" id="iops-veryhigh" value="veryhigh" />
+          <label for="iops-veryhigh">
+            <div class="iops-value">&gt; 200K</div>
+            <div class="iops-label">Muy alta</div>
+            <div class="iops-range">DBs críticas, HPC, analytics RT</div>
+          </label>
+        </div>
+      </div>
+      <div class="error-msg" id="err-iops" style="margin-top:12px;">Selecciona el nivel de IOPS requerido</div>
+      <div class="nav-buttons">
+        <button class="btn btn-ghost" onclick="prevStep(5)">‹ Atrás</button>
+        <button class="btn btn-primary" onclick="nextStep(5)">Continuar <span class="btn-icon">›</span></button>
+      </div>
+    </div>
+
+    <!-- ── Paso 6: Protocolo de conectividad ── -->
+    <div class="step-card" id="step-6">
+      <div class="corner-deco"></div>
+      <div class="step-number">Paso 06 / 10</div>
+      <div class="step-title">Protocolo de conectividad</div>
+      <div class="step-subtitle">Infraestructura de red de storage disponible o preferida del cliente</div>
+      <div class="radio-cards">
+        <div class="radio-card">
+          <input type="radio" name="protocol" id="proto-fc" value="fc" />
+          <label for="proto-fc">
+            <div class="radio-indicator"></div>
+            <div class="radio-card-content">
+              <div class="radio-card-title">Fibre Channel (FC)</div>
+              <div class="radio-card-desc">SAN dedicada, máxima performance y aislamiento — entornos enterprise con switches FC</div>
+            </div>
+          </label>
+        </div>
+        <div class="radio-card">
+          <input type="radio" name="protocol" id="proto-iscsi" value="iscsi" />
+          <label for="proto-iscsi">
+            <div class="radio-indicator"></div>
+            <div class="radio-card-content">
+              <div class="radio-card-title">iSCSI</div>
+              <div class="radio-card-desc">SAN sobre IP Ethernet — flexible, menor costo de infraestructura de red</div>
+            </div>
+          </label>
+        </div>
+        <div class="radio-card">
+          <input type="radio" name="protocol" id="proto-nvme" value="nvme" />
+          <label for="proto-nvme">
+            <div class="radio-indicator"></div>
+            <div class="radio-card-content">
+              <div class="radio-card-title">NVMe over Fabrics (NVMe-oF)</div>
+              <div class="radio-card-desc">Máximo throughput y mínima latencia — requiere fabric RDMA (RoCE o InfiniBand)</div>
+            </div>
+          </label>
+        </div>
+        <div class="radio-card">
+          <input type="radio" name="protocol" id="proto-any" value="any" />
+          <label for="proto-any">
+            <div class="radio-indicator"></div>
+            <div class="radio-card-content">
+              <div class="radio-card-title">Sin preferencia / A definir</div>
+              <div class="radio-card-desc">No está definido aún — el simulador considera todas las opciones del portfolio IBM</div>
+            </div>
+          </label>
+        </div>
+      </div>
+      <div class="error-msg" id="err-protocol" style="margin-top:12px;">Selecciona un protocolo</div>
+      <div class="nav-buttons">
+        <button class="btn btn-ghost" onclick="prevStep(6)">‹ Atrás</button>
+        <button class="btn btn-primary" onclick="nextStep(6)">Continuar <span class="btn-icon">›</span></button>
+      </div>
+    </div>
+
+    <!-- ── Paso 7: Entorno de virtualización ── -->
+    <div class="step-card" id="step-7">
+      <div class="corner-deco"></div>
+      <div class="step-number">Paso 07 / 10</div>
+      <div class="step-title">Entorno de virtualización</div>
+      <div class="step-subtitle">Plataforma de hipervisor o entorno de cómputo del cliente</div>
+      <div class="radio-cards radio-cards-2col">
+        <div class="radio-card">
+          <input type="radio" name="hypervisor" id="hv-vmware" value="vmware" />
+          <label for="hv-vmware">
+            <div class="radio-indicator"></div>
+            <div class="radio-card-content">
+              <div class="radio-card-title">VMware vSphere</div>
+              <div class="radio-card-desc">Plugin IBM Storage para vCenter, VAAI, vVols</div>
+            </div>
+          </label>
+        </div>
+        <div class="radio-card">
+          <input type="radio" name="hypervisor" id="hv-hyperv" value="hyperv" />
+          <label for="hv-hyperv">
+            <div class="radio-indicator"></div>
+            <div class="radio-card-content">
+              <div class="radio-card-title">Microsoft Hyper-V</div>
+              <div class="radio-card-desc">SMB 3.0, CSV, ODX — integración nativa</div>
+            </div>
+          </label>
+        </div>
+        <div class="radio-card">
+          <input type="radio" name="hypervisor" id="hv-bare" value="bare" />
+          <label for="hv-bare">
+            <div class="radio-indicator"></div>
+            <div class="radio-card-content">
+              <div class="radio-card-title">Bare metal</div>
+              <div class="radio-card-desc">Sin hipervisor — servidores físicos directos</div>
+            </div>
+          </label>
+        </div>
+        <div class="radio-card">
+          <input type="radio" name="hypervisor" id="hv-mixed" value="mixed" />
+          <label for="hv-mixed">
+            <div class="radio-indicator"></div>
+            <div class="radio-card-content">
+              <div class="radio-card-title">Mixto / Varios</div>
+              <div class="radio-card-desc">Combinación de plataformas en el mismo entorno</div>
+            </div>
+          </label>
+        </div>
+      </div>
+      <div class="error-msg" id="err-hypervisor" style="margin-top:12px;">Selecciona el entorno de virtualización</div>
+      <div class="nav-buttons">
+        <button class="btn btn-ghost" onclick="prevStep(7)">‹ Atrás</button>
+        <button class="btn btn-primary" onclick="nextStep(7)">Continuar <span class="btn-icon">›</span></button>
+      </div>
+    </div>
+
+    <!-- ── Paso 8: IBM storage existente ── -->
+    <div class="step-card" id="step-8">
+      <div class="corner-deco"></div>
+      <div class="step-number">Paso 08 / 10</div>
+      <div class="step-title">¿El cliente tiene storage IBM existente?</div>
+      <div class="step-subtitle">Determina si se puede aprovechar IBM Storage Virtualize para integración sin migración</div>
+      <div class="radio-cards">
+        <div class="radio-card">
+          <input type="radio" name="existing-ibm" id="ibm-yes" value="yes" />
+          <label for="ibm-yes">
+            <div class="radio-indicator"></div>
+            <div class="radio-card-content">
+              <div class="radio-card-title">Sí — tiene arrays IBM activos</div>
+              <div class="radio-card-desc">Storwize, DS Series, FlashSystem anteriores — pueden federarse con IBM Storage Virtualize sin migración de datos</div>
+            </div>
+          </label>
+        </div>
+        <div class="radio-card">
+          <input type="radio" name="existing-ibm" id="ibm-no" value="no" />
+          <label for="ibm-no">
+            <div class="radio-indicator"></div>
+            <div class="radio-card-content">
+              <div class="radio-card-title">No — entorno nuevo o con otro vendor</div>
+              <div class="radio-card-desc">Primera implementación IBM o migración desde otra plataforma</div>
+            </div>
+          </label>
+        </div>
+      </div>
+      <div class="error-msg" id="err-existing" style="margin-top:12px;">Selecciona una opción</div>
+      <div class="nav-buttons">
+        <button class="btn btn-ghost" onclick="prevStep(8)">‹ Atrás</button>
+        <button class="btn btn-primary" onclick="nextStep(8)">Continuar <span class="btn-icon">›</span></button>
+      </div>
+    </div>
+
+    <!-- ── Paso 9: Disponibilidad ── -->
+    <div class="step-card" id="step-9">
+      <div class="corner-deco"></div>
+      <div class="step-number">Paso 09 / 10</div>
       <div class="step-title">Nivel de disponibilidad</div>
       <div class="step-subtitle">¿Cuánto impacto tiene un tiempo de inactividad no planificado?</div>
       <div class="radio-cards">
@@ -538,15 +739,15 @@
       </div>
       <div class="error-msg" id="err-avail" style="margin-top:12px;">Selecciona un nivel de disponibilidad</div>
       <div class="nav-buttons">
-        <button class="btn btn-ghost" onclick="prevStep(5)">‹ Atrás</button>
-        <button class="btn btn-primary" onclick="nextStep(5)">Continuar <span class="btn-icon">›</span></button>
+        <button class="btn btn-ghost" onclick="prevStep(9)">‹ Atrás</button>
+        <button class="btn btn-primary" onclick="nextStep(9)">Continuar <span class="btn-icon">›</span></button>
       </div>
     </div>
 
-    <!-- Paso 6 — Presupuesto -->
-    <div class="step-card" id="step-6">
+    <!-- ── Paso 10: Presupuesto ── -->
+    <div class="step-card" id="step-10">
       <div class="corner-deco"></div>
-      <div class="step-number">Paso 06 / 06</div>
+      <div class="step-number">Paso 10 / 10</div>
       <div class="step-title">Presupuesto aproximado</div>
       <div class="step-subtitle">Marco de inversión disponible del cliente</div>
       <div class="radio-cards">
@@ -583,7 +784,7 @@
       </div>
       <div class="error-msg" id="err-budget" style="margin-top:12px;">Selecciona un rango de presupuesto</div>
       <div class="nav-buttons">
-        <button class="btn btn-ghost" onclick="prevStep(6)">‹ Atrás</button>
+        <button class="btn btn-ghost" onclick="prevStep(10)">‹ Atrás</button>
         <button class="btn btn-primary" onclick="runAnalysis()">Analizar y Recomendar <span class="btn-icon">&#9658;</span></button>
       </div>
     </div>
@@ -592,8 +793,20 @@
 
   <div class="processing" id="processing">&#9632; Procesando parámetros... generando recomendación IBM Storage</div>
 
-  <!-- ── RESULTS ── -->
+  <!-- ══════════════════ RESULTS ══════════════════ -->
   <div id="results-section">
+
+    <!-- Client band -->
+    <div class="results-client-band" id="client-band">
+      <div>
+        <div class="rcb-label">Cliente / Oportunidad</div>
+        <div class="rcb-value" id="rcb-client"></div>
+      </div>
+      <div>
+        <div class="rcb-label">Fecha del análisis</div>
+        <div class="rcb-value" id="rcb-date"></div>
+      </div>
+    </div>
 
     <div class="results-header">
       <div class="results-title">&#9632; Análisis completado — Portfolio IBM Storage</div>
@@ -601,6 +814,10 @@
       <div class="results-sub" id="results-sub"></div>
     </div>
 
+    <!-- Context tags -->
+    <div class="context-tags" id="context-tags"></div>
+
+    <!-- Projection band -->
     <div class="projection-band">
       <div class="proj-stat">
         <div class="proj-label">Capacidad actual</div>
@@ -615,13 +832,14 @@
         <div class="proj-value" id="proj-growth">—<span>%</span></div>
       </div>
       <div class="proj-stat">
-        <div class="proj-label">Cap. recomendada (+30% buffer)</div>
+        <div class="proj-label">Cap. recomendada (+30%)</div>
         <div class="proj-value" id="proj-rec">—<span>TB</span></div>
       </div>
     </div>
 
     <div id="cards-container"></div>
 
+    <!-- Summary -->
     <div class="summary-section">
       <div class="summary-title">&#9632; Resumen de datos ingresados</div>
       <div class="summary-grid" id="summary-grid"></div>
@@ -641,46 +859,50 @@
 //  STATE
 // ═══════════════════════════════════════════════════
 const state = {
-  servers: null, currentTB: null, growthPct: null,
-  loads: [], availability: null, budget: null
+  clientName:   '',
+  servers:      null,
+  currentTB:    null,
+  growthPct:    null,
+  loads:        [],
+  iops:         null,
+  protocol:     null,
+  hypervisor:   null,
+  existingIBM:  null,
+  availability: null,
+  budget:       null
 };
-const TOTAL_STEPS = 6;
+
+const TOTAL_STEPS = 10;
 let currentStep = 1;
 
 // ═══════════════════════════════════════════════════
-//  IBM STORAGE PORTFOLIO
-//  Cinco plataformas que cubren entry → enterprise
+//  IBM PORTFOLIO
 // ═══════════════════════════════════════════════════
 const IBM_SOLUTIONS = {
-
   fs5300: {
     name: 'IBM FlashSystem 5300',
     tier: 'Entry-Level All-Flash Array',
     family: 'IBM FlashSystem',
     tagline: 'Entry all-flash · hasta ~1 PB efectivo · iSCSI / FC / NVMe-oF'
   },
-
   fs7300: {
     name: 'IBM FlashSystem 7300',
     tier: 'Mid-Range All-Flash Array',
     family: 'IBM FlashSystem',
     tagline: 'Mid-range all-flash · hasta ~4 PB efectivo · NVMe-oF / FC / iSCSI'
   },
-
   fs9500: {
     name: 'IBM FlashSystem 9500',
     tier: 'Enterprise All-Flash Array',
     family: 'IBM FlashSystem',
     tagline: 'Enterprise all-flash · hasta ~32 PB efectivo · NVMe-oF / FC / iSCSI'
   },
-
   sv5100: {
     name: 'IBM Storage Virtualize (SV5100)',
     tier: 'Híbrido Flash + HDD — Virtualización de Storage',
     family: 'IBM Storwize / Storage Virtualize',
     tagline: 'Hybrid flash/HDD · tiering automático · hasta ~2 PB · FC / iSCSI / NFS / SMB'
   },
-
   ibmcos: {
     name: 'IBM Storage Scale / Cloud Object Storage',
     tier: 'Object Storage — Backup, Archivo y Datos No Estructurados',
@@ -690,7 +912,7 @@ const IBM_SOLUTIONS = {
 };
 
 // ═══════════════════════════════════════════════════
-//  INIT — progress dots
+//  INIT
 // ═══════════════════════════════════════════════════
 (function init() {
   const c = document.getElementById('steps-dots');
@@ -744,12 +966,24 @@ function showErr(id, show) {
 
 function validateStep(step) {
   let ok = true;
-  if (step === 1) { const v = parseInt(document.getElementById('num-servers').value); ok = !isNaN(v) && v > 0; showErr('err-servers', !ok); }
-  if (step === 2) { const v = parseFloat(document.getElementById('current-tb').value); ok = !isNaN(v) && v > 0; showErr('err-tb', !ok); }
-  if (step === 3) { const v = parseFloat(document.getElementById('growth-pct').value); ok = !isNaN(v) && v >= 0 && v <= 500; showErr('err-growth', !ok); }
-  if (step === 4) { ok = document.querySelectorAll('#step-4 input[type="checkbox"]:checked').length > 0; showErr('err-load', !ok); }
-  if (step === 5) { ok = !!document.querySelector('input[name="avail"]:checked'); showErr('err-avail', !ok); }
-  if (step === 6) { ok = !!document.querySelector('input[name="budget"]:checked'); showErr('err-budget', !ok); }
+  if (step === 1) {
+    const name = document.getElementById('client-name').value.trim();
+    const srv  = parseInt(document.getElementById('num-servers').value);
+    const okName = name.length > 0;
+    const okSrv  = !isNaN(srv) && srv > 0;
+    showErr('err-client', !okName);
+    showErr('err-servers', !okSrv);
+    ok = okName && okSrv;
+  }
+  if (step === 2)  { const v = parseFloat(document.getElementById('current-tb').value); ok = !isNaN(v) && v > 0; showErr('err-tb', !ok); }
+  if (step === 3)  { const v = parseFloat(document.getElementById('growth-pct').value); ok = !isNaN(v) && v >= 0 && v <= 500; showErr('err-growth', !ok); }
+  if (step === 4)  { ok = document.querySelectorAll('#step-4 input[type="checkbox"]:checked').length > 0; showErr('err-load', !ok); }
+  if (step === 5)  { ok = !!document.querySelector('input[name="iops"]:checked'); showErr('err-iops', !ok); }
+  if (step === 6)  { ok = !!document.querySelector('input[name="protocol"]:checked'); showErr('err-protocol', !ok); }
+  if (step === 7)  { ok = !!document.querySelector('input[name="hypervisor"]:checked'); showErr('err-hypervisor', !ok); }
+  if (step === 8)  { ok = !!document.querySelector('input[name="existing-ibm"]:checked'); showErr('err-existing', !ok); }
+  if (step === 9)  { ok = !!document.querySelector('input[name="avail"]:checked'); showErr('err-avail', !ok); }
+  if (step === 10) { ok = !!document.querySelector('input[name="budget"]:checked'); showErr('err-budget', !ok); }
   return ok;
 }
 
@@ -757,20 +991,24 @@ function validateStep(step) {
 //  COLLECT
 // ═══════════════════════════════════════════════════
 function collectStep(step) {
-  if (step === 1) state.servers    = parseInt(document.getElementById('num-servers').value);
-  if (step === 2) state.currentTB  = parseFloat(document.getElementById('current-tb').value);
-  if (step === 3) state.growthPct  = parseFloat(document.getElementById('growth-pct').value);
-  if (step === 4) state.loads      = Array.from(document.querySelectorAll('#step-4 input[type="checkbox"]:checked')).map(c => c.value);
-  if (step === 5) state.availability = document.querySelector('input[name="avail"]:checked').value;
-  if (step === 6) state.budget     = document.querySelector('input[name="budget"]:checked').value;
+  if (step === 1)  { state.clientName = document.getElementById('client-name').value.trim(); state.servers = parseInt(document.getElementById('num-servers').value); }
+  if (step === 2)  state.currentTB   = parseFloat(document.getElementById('current-tb').value);
+  if (step === 3)  state.growthPct   = parseFloat(document.getElementById('growth-pct').value);
+  if (step === 4)  state.loads       = Array.from(document.querySelectorAll('#step-4 input[type="checkbox"]:checked')).map(c => c.value);
+  if (step === 5)  state.iops        = document.querySelector('input[name="iops"]:checked').value;
+  if (step === 6)  state.protocol    = document.querySelector('input[name="protocol"]:checked').value;
+  if (step === 7)  state.hypervisor  = document.querySelector('input[name="hypervisor"]:checked').value;
+  if (step === 8)  state.existingIBM = document.querySelector('input[name="existing-ibm"]:checked').value;
+  if (step === 9)  state.availability = document.querySelector('input[name="avail"]:checked').value;
+  if (step === 10) state.budget      = document.querySelector('input[name="budget"]:checked').value;
 }
 
 // ═══════════════════════════════════════════════════
 //  RUN ANALYSIS
 // ═══════════════════════════════════════════════════
 function runAnalysis() {
-  if (!validateStep(6)) return;
-  collectStep(6);
+  if (!validateStep(10)) return;
+  collectStep(10);
   document.getElementById('wizard-container').style.display = 'none';
   document.getElementById('progress-wrap').style.display    = 'none';
   const proc = document.getElementById('processing');
@@ -784,149 +1022,161 @@ function runAnalysis() {
 }
 
 // ═══════════════════════════════════════════════════
-//  SCORING ENGINE — IBM Storage exclusivo
-//
-//  Lógica por capas:
-//  1. Workload fit
-//  2. Availability tier
-//  3. Budget filter
-//  4. Scale / TB fit
+//  SCORING ENGINE — 5 capas
 // ═══════════════════════════════════════════════════
 function scoreRecommendations() {
-  const { loads, availability, budget, growthPct, currentTB } = state;
+  const { loads, availability, budget, growthPct, currentTB, iops, protocol, hypervisor, existingIBM } = state;
 
   const hasDB     = loads.includes('db');
   const hasVMs    = loads.includes('vms');
   const hasBackup = loads.includes('backup');
   const hasFiles  = loads.includes('files');
 
-  const isCritical = availability === 'critical';
-  const isMedium   = availability === 'medium';
-  const isBasic    = availability === 'basic';
+  const isCritical  = availability === 'critical';
+  const isMedium    = availability === 'medium';
+  const isBasic     = availability === 'basic';
 
-  const isLow      = budget === 'low';
-  const isMidBudget= budget === 'medium';
-  const isHigh     = budget === 'high';
+  const isLow       = budget === 'low';
+  const isMidBudget = budget === 'medium';
+  const isHigh      = budget === 'high';
 
-  const proj3y  = currentTB * Math.pow(1 + growthPct / 100, 3);
+  const proj3y     = currentTB * Math.pow(1 + growthPct / 100, 3);
   const highGrowth = growthPct >= 30;
-  const largeScale = proj3y > 500;   // >500 TB proyectados
-  const hugeScale  = proj3y > 2000;  // >2 PB proyectados
+  const largeScale = proj3y > 500;
+  const hugeScale  = proj3y > 2000;
 
   const s = { fs5300: 0, fs7300: 0, fs9500: 0, sv5100: 0, ibmcos: 0 };
 
   // ── 1. Workload ──
-  // Bases de datos: all-flash siempre; crítico → 9500, medio → 7300, básico → 5300
   if (hasDB) {
-    if (isCritical)  { s.fs9500 += 50; s.fs7300 += 30; }
+    if (isCritical)   { s.fs9500 += 50; s.fs7300 += 30; }
     else if (isMedium){ s.fs7300 += 45; s.fs9500 += 20; s.fs5300 += 15; }
     else              { s.fs5300 += 35; s.fs7300 += 20; }
   }
-
-  // VMs: all-flash óptimo; escala define el tier
   if (hasVMs) {
     if (isCritical)   { s.fs9500 += 45; s.fs7300 += 25; }
     else if (isMedium){ s.fs7300 += 40; s.fs5300 += 20; s.sv5100 += 10; }
     else              { s.fs5300 += 30; s.sv5100 += 20; }
   }
-
-  // Backup masivo: SV5100 (híbrido) o IBM COS para escala
   if (hasBackup) {
     s.ibmcos += 35; s.sv5100 += 30;
-    if (isLow)   { s.ibmcos += 15; s.sv5100 += 10; }
+    if (isLow)    { s.ibmcos += 15; s.sv5100 += 10; }
     if (hugeScale){ s.ibmcos += 20; }
   }
-
-  // Archivos / NAS: SV5100 (NFS/SMB nativos) o COS para archivo masivo
   if (hasFiles) {
     s.sv5100 += 30; s.ibmcos += 20;
-    if (isLow)    { s.ibmcos += 10; }
+    if (isLow)     { s.ibmcos += 10; }
     if (isCritical){ s.fs7300 += 15; s.sv5100 += 10; }
   }
 
   // ── 2. Disponibilidad ──
-  if (isCritical) { s.fs9500 += 30; s.fs7300 += 15; }
-  if (isMedium)   { s.fs7300 += 20; s.sv5100 += 10; }
-  if (isBasic)    { s.sv5100 += 15; s.ibmcos += 10; s.fs5300 += 10; }
+  if (isCritical){ s.fs9500 += 30; s.fs7300 += 15; }
+  if (isMedium)  { s.fs7300 += 20; s.sv5100 += 10; }
+  if (isBasic)   { s.sv5100 += 15; s.ibmcos += 10; s.fs5300 += 10; }
 
   // ── 3. Budget ──
-  if (isHigh)     { s.fs9500 += 25; s.fs7300 += 10; }
-  if (isMidBudget){ s.fs7300 += 20; s.sv5100 += 15; s.fs5300 += 10; }
-  if (isLow)      { s.sv5100 += 25; s.ibmcos += 20; s.fs5300 += 15; }
+  if (isHigh)      { s.fs9500 += 25; s.fs7300 += 10; }
+  if (isMidBudget) { s.fs7300 += 20; s.sv5100 += 15; s.fs5300 += 10; }
+  if (isLow)       { s.sv5100 += 25; s.ibmcos += 20; s.fs5300 += 15; }
 
   // ── 4. Escala / TB ──
-  if (hugeScale)  { s.fs9500 += 20; s.ibmcos += 25; }
+  if (hugeScale)                { s.fs9500 += 20; s.ibmcos += 25; }
   if (largeScale && !hugeScale) { s.fs9500 += 10; s.fs7300 += 15; s.sv5100 += 10; }
   if (!largeScale && !isHigh)   { s.fs5300 += 10; }
   if (highGrowth && isHigh)     { s.fs9500 += 15; }
   if (highGrowth && isMidBudget){ s.fs7300 += 12; }
 
-  // ── Asegurar baselines coherentes ──
+  // ── 5a. IOPS ──
+  if (iops === 'veryhigh'){ s.fs9500 += 40; s.fs7300 += 20; }
+  if (iops === 'high')    { s.fs7300 += 30; s.fs9500 += 20; s.fs5300 += 5; }
+  if (iops === 'medium')  { s.fs7300 += 15; s.fs5300 += 20; s.sv5100 += 10; }
+  if (iops === 'low')     { s.sv5100 += 20; s.ibmcos += 15; s.fs5300 += 10; }
+
+  // ── 5b. Protocolo ──
+  if (protocol === 'nvme')  { s.fs9500 += 20; s.fs7300 += 15; }   // NVMe-oF mejor en 9500/7300
+  if (protocol === 'fc')    { s.fs9500 += 10; s.fs7300 += 8; s.fs5300 += 5; }
+  if (protocol === 'iscsi') { s.sv5100 += 10; s.fs5300 += 8; }   // iSCSI más flexible en entry/hybrid
+
+  // ── 5c. Hipervisor ──
+  if (hypervisor === 'vmware')  { s.fs7300 += 15; s.fs9500 += 10; s.fs5300 += 8; }  // IBM Storage Plugin for vCenter
+  if (hypervisor === 'hyperv')  { s.sv5100 += 12; s.fs5300 += 8; }
+  if (hypervisor === 'mixed')   { s.sv5100 += 18; }  // SV5100 es el más multi-protocolo
+  if (hypervisor === 'bare')    { s.fs7300 += 8; s.fs5300 += 5; }
+
+  // ── 5d. IBM Storage existente ──
+  if (existingIBM === 'yes') {
+    s.sv5100 += 30;  // SV5100 puede federar arrays IBM viejos via Storage Virtualize sin migración
+  }
+
+  // ── Baselines ──
   s.fs5300 = Math.max(s.fs5300, 5);
   s.fs7300 = Math.max(s.fs7300, 5);
-  s.sv5100 = Math.max(s.sv5100, hasBackup || hasFiles ? 15 : 5);
+  s.sv5100 = Math.max(s.sv5100, (hasBackup || hasFiles || existingIBM === 'yes') ? 20 : 5);
   s.ibmcos = Math.max(s.ibmcos, hasBackup ? 15 : 5);
 
-  // Tomar top 3 por score
-  return Object.entries(s)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3)
-    .map(([key]) => key);
+  return Object.entries(s).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([key]) => key);
 }
 
 // ═══════════════════════════════════════════════════
-//  WHY-TEXT — personalizado por solución y contexto
+//  WHY-TEXT
 // ═══════════════════════════════════════════════════
 function buildWhyText(key) {
-  const { loads, availability, budget, servers, growthPct, currentTB } = state;
+  const { loads, availability, servers, growthPct, currentTB, iops, protocol, hypervisor, existingIBM } = state;
   const hasDB     = loads.includes('db');
   const hasVMs    = loads.includes('vms');
   const hasBackup = loads.includes('backup');
-  const hasFiles  = loads.includes('files');
   const isCritical = availability === 'critical';
-  const isMedium   = availability === 'medium';
   const proj3y = Math.ceil(currentTB * Math.pow(1 + growthPct / 100, 3));
 
+  const protoLabel = { fc: 'Fibre Channel', iscsi: 'iSCSI', nvme: 'NVMe-oF', any: 'multiprotocolo' };
+  const hvLabel    = { vmware: 'VMware vSphere', hyperv: 'Microsoft Hyper-V', bare: 'bare metal', mixed: 'entorno mixto' };
+  const iopsLabel  = { low: '< 10K IOPS', medium: '10K–50K IOPS', high: '50K–200K IOPS', veryhigh: '> 200K IOPS' };
+
+  const pLabel = protoLabel[protocol] || '';
+  const hLabel = hvLabel[hypervisor] || '';
+  const iLabel = iopsLabel[iops] || '';
+
   const texts = {
-
     fs5300: [
-      `El IBM FlashSystem 5300 es el punto de entrada al portfolio all-flash de IBM, diseñado para entornos de hasta ${servers} servidores que necesitan performance NVMe sin la complejidad de plataformas enterprise más grandes.`,
-      hasVMs
-        ? `Soporta cargas de virtualización VMware y Microsoft Hyper-V con latencias de menos de 200 µs, ofreciendo el salto de calidad de HDD a all-flash al menor costo de inversión inicial del portfolio IBM.`
-        : `Sus capacidades de compresión y deduplicación en línea permiten reducir el footprint real de datos, optimizando el costo por TB efectivo almacenado.`,
-      `Con una proyección a 3 años de ${proj3y} TB, el FlashSystem 5300 permite crecer de forma no disruptiva agregando drives, con soporte para IBM Storage Virtualize para evolucionar hacia el 7300 o 9500 sin migración de datos.`
+      `El IBM FlashSystem 5300 es el punto de entrada all-flash del portfolio IBM, dimensionado para los ${servers} servidores de este entorno con un requerimiento de ${iLabel}, entregando performance NVMe sin la complejidad de plataformas de mayor escala.`,
+      hypervisor === 'vmware'
+        ? `Se integra con ${hLabel} mediante el IBM Storage Plugin para vCenter, habilitando VAAI, vVols y thin provisioning automático, reduciendo la carga operativa del equipo de infraestructura.`
+        : `Compatible con ${hLabel} a través de ${pLabel}, con soporte nativo para IBM Storage Insights para monitoreo predictivo y gestión centralizada desde una sola consola.`,
+      `Con una proyección de ${proj3y} TB a 3 años, el FlashSystem 5300 permite escalar de forma no disruptiva, y su compatibilidad con IBM Storage Virtualize habilita una ruta de crecimiento hacia el 7300 o 9500 sin migración de datos.`
     ],
-
     fs7300: [
-      `El IBM FlashSystem 7300 es la plataforma mid-range all-flash de IBM, ideal para los ${servers} servidores de este entorno con cargas mixtas${hasDB ? ' de bases de datos' : ''}${hasVMs ? ' y virtualización' : ''} que demandan consistencia de baja latencia.`,
+      `El IBM FlashSystem 7300 es la plataforma mid-range all-flash de IBM, diseñada para los ${servers} servidores con cargas ${hasDB ? 'de bases de datos ' : ''}${hasVMs ? 'y virtualización ' : ''}que demandan ${iLabel} con consistencia de latencia baja.`,
       isCritical
-        ? `Sus controladores duales activo-activo y las opciones de replicación síncrona con IBM HyperSwap garantizan continuidad operativa ante fallas de sitio, cubriendo el nivel de disponibilidad crítico requerido.`
-        : `Integra IBM Storage Insights Pro para monitoreo predictivo con inteligencia artificial, anticipando cuellos de botella antes de que impacten en producción.`,
-      `Con NVMe-oF end-to-end y soporte para FC, iSCSI y NVMe over RoCE, el FlashSystem 7300 cubre todos los protocolos que los ${servers} servidores puedan requerir, con escalabilidad hasta ~4 PB efectivos.`
+        ? `Sus controladores duales activo-activo con IBM HyperSwap y replicación síncrona garantizan continuidad ante fallas de sitio — cubriendo el nivel de disponibilidad crítico requerido. Conectividad ${pLabel} integrada de fábrica.`
+        : hypervisor === 'vmware'
+          ? `Con el IBM Storage Plugin para ${hLabel}, habilita vVols, VAAI y snapshots gestionados desde vCenter. IBM Storage Insights Pro anticipa cuellos de botella antes de que afecten producción.`
+          : `Integra IBM Storage Insights Pro para monitoreo con IA, anticipando degradaciones de performance. Su soporte ${pLabel} cubre la infraestructura de red del cliente.`,
+      `NVMe-oF end-to-end con soporte FC, iSCSI y RoCE cubre todos los protocolos del entorno. Con escalabilidad hasta ~4 PB efectivos, cubre con margen la proyección de ${proj3y} TB a 3 años.`
     ],
-
     fs9500: [
-      `El IBM FlashSystem 9500 es la plataforma all-flash de mayor escala del portfolio IBM, diseñada para entornos enterprise${isCritical ? ' de misión crítica' : ' exigentes'} con cero tolerancia a interrupciones y alta densidad de workloads.`,
+      `El IBM FlashSystem 9500 es la plataforma all-flash de máxima escala del portfolio IBM. Con requerimientos de ${iLabel} en un entorno${isCritical ? ' de misión crítica' : ' exigente'} de ${servers} servidores, es la plataforma que entrega el headroom necesario sin compromisos.`,
       hasDB
-        ? `Para cargas de bases de datos${isCritical ? ' críticas' : ''}, ofrece latencias sub-100 µs con NVMe-oF, QoS granular por volumen y compresión adaptativa que maximiza el aprovechamiento efectivo de capacidad.`
-        : `Su arquitectura NVMe end-to-end entrega el máximo throughput para cargas intensivas, con tiering inteligente y deduplicación en línea que pueden reducir el almacenamiento físico requerido hasta un 5:1.`,
-      `Soporta escalabilidad hasta 32 PB efectivos, IBM Metro Mirror y Global Mirror para replicación multi-sitio, y se integra nativamente con IBM Spectrum Protect para una estrategia de protección de datos completa.`
+        ? `Para bases de datos${isCritical ? ' críticas' : ''}, ofrece latencias sub-100 µs con NVMe-oF, QoS granular por volumen y compresión adaptativa. El soporte ${pLabel} se entrega nativo sin hardware adicional.`
+        : `Su arquitectura NVMe end-to-end con SCM (Storage Class Memory) entrega throughput máximo para${hasVMs ? ' cargas de virtualización densa' : ' todos los workloads del entorno'}. Compatible con ${hLabel}.`,
+      existingIBM === 'yes'
+        ? `Al tener arrays IBM existentes, el FlashSystem 9500 con IBM Storage Virtualize puede federarlos bajo una sola vista de gestión — los datos del storage viejo quedan accesibles sin migración física.`
+        : `Soporta IBM Metro Mirror y Global Mirror para replicación multi-sitio, escalabilidad hasta 32 PB efectivos y se integra nativamente con IBM Spectrum Protect para protección de datos end-to-end.`
     ],
-
     sv5100: [
-      `El IBM Storage Virtualize (SV5100) combina flash de caché de alta velocidad con capacidad HDD de alta densidad, aplicando tiering automático para que los datos calientes siempre estén en flash y los fríos en HDD.`,
-      hasBackup
-        ? `Para cargas de backup es especialmente eficiente: su motor de deduplicación y compresión reduce significativamente el espacio físico requerido, con soporte nativo para IBM Spectrum Protect y Veeam como repositorio de backup.`
-        : `Soporta NFS, SMB, iSCSI y Fibre Channel de forma nativa, siendo la plataforma del portfolio IBM más versátil para entornos con múltiples tipos de carga y workloads mixtos.`,
-      `La virtualización de storage integrada permite federar arrays IBM existentes bajo una sola interfaz de gestión, reduciendo la complejidad operativa para los ${servers} servidores del entorno.`
+      `El IBM Storage Virtualize (SV5100) combina caché flash NVMe con capacidad HDD de alta densidad aplicando IBM Easy Tier — datos calientes en flash, fríos en HDD, de forma automática y transparente para los ${servers} servidores.`,
+      existingIBM === 'yes'
+        ? `Con arrays IBM existentes en el entorno, el SV5100 es la opción estratégica: IBM Storage Virtualize puede federar los arrays actuales bajo una interfaz unificada sin migración de datos, protegiendo la inversión realizada.`
+        : hasBackup
+          ? `Para cargas de backup, su motor de deduplicación y compresión reduce el footprint físico significativamente. Soporta IBM Spectrum Protect y Veeam como repositorio de backup de forma nativa.`
+          : `Soporta FC, iSCSI, NFS y SMB de forma nativa — la opción más versátil del portfolio IBM para entornos con cargas mixtas como las indicadas en el relevamiento.`,
+      `Con soporte ${pLabel} y compatibilidad con ${hLabel}, el SV5100 cubre toda la infraestructura del cliente. Su arquitectura dual-controller activo-activo escala hasta ~2 PB efectivos de forma no disruptiva.`
     ],
-
     ibmcos: [
-      `IBM Storage Scale / Cloud Object Storage es la solución del portfolio IBM para almacenamiento masivo de datos no estructurados, con escalabilidad hasta petabytes sin límite práctico de capacidad.`,
+      `IBM Storage Scale / Cloud Object Storage es la plataforma del portfolio IBM para datos no estructurados a escala masiva. Con una proyección de ${proj3y} TB a 3 años, su arquitectura de escala horizontal crece sin límite práctico agregando nodos sin downtime.`,
       hasBackup
-        ? `Para repositorios de backup a gran escala, IBM COS ofrece la mejor relación TB/costo del portfolio IBM, con policies de ciclo de vida automatizadas que mueven datos automáticamente entre tiers caliente, tibio y frío.`
-        : `Compatible con protocolo S3, NFS y SMB, se integra con las principales herramientas de gestión de datos y permite servir como repositorio central para archivos y datos de largo plazo.`,
-      `Con una proyección de ${proj3y} TB a 3 años, la arquitectura de escala horizontal de IBM COS crece agregando nodos sin downtime, sin necesidad de migraciones ni re-balanceo manual de datos.`
+        ? `Para repositorios de backup, IBM COS ofrece la mejor relación TB/costo del portfolio IBM, con políticas de ciclo de vida automatizadas que mueven datos entre tiers caliente, tibio y frío según su antigüedad y frecuencia de acceso.`
+        : `Compatible con S3, NFS y SMB, se integra con las principales herramientas de gestión de datos y sirve como repositorio central para archivo de largo plazo y datos de acceso infrecuente.`,
+      `Protección mediante Erasure Coding configurable (equivalente a RAID distribuido), con disponibilidad de datos de 99.999999999%. Ideal como capa de archivo complementaria a una solución FlashSystem de producción.`
     ]
   };
 
@@ -934,64 +1184,70 @@ function buildWhyText(key) {
 }
 
 // ═══════════════════════════════════════════════════
-//  SPECS — basadas en la solución y el dimensionamiento
+//  SPECS
 // ═══════════════════════════════════════════════════
 function buildSpecs(key) {
-  const { currentTB, growthPct, availability } = state;
+  const { currentTB, growthPct, availability, iops, protocol } = state;
   const proj3y = currentTB * Math.pow(1 + growthPct / 100, 3);
   const recCap = Math.ceil(proj3y * 1.3);
   const isCritical = availability === 'critical';
 
+  const iopsMap = {
+    low: '< 10K IOPS', medium: 'hasta 50K IOPS',
+    high: 'hasta 200K IOPS', veryhigh: '> 200K IOPS'
+  };
+  const protoMap = { fc: 'Fibre Channel', iscsi: 'iSCSI', nvme: 'NVMe-oF', any: 'FC / iSCSI / NVMe-oF' };
+
   const map = {
     fs5300: [
-      { key: 'Capacidad sugerida',  val: `${recCap} TB (efectivo)` },
-      { key: 'Tipo de drive',       val: 'NVMe Flash (SSD)' },
-      { key: 'RAID / Protección',   val: 'RAID 5 / RAID 6' },
-      { key: 'Redundancia',         val: 'Dual controller AA' },
-      { key: 'Protocolos',          val: 'iSCSI, FC, NVMe-oF' },
-      { key: 'Latencia típica',     val: '< 200 µs' },
-      { key: 'Disponibilidad',      val: '99.9999%' },
-      { key: 'Escalabilidad máx.',  val: '~1 PB efectivo' }
+      { key: 'Capacidad sugerida', val: `${recCap} TB (efectivo)` },
+      { key: 'Tipo de drive',      val: 'NVMe Flash (SSD)' },
+      { key: 'RAID / Protección',  val: 'RAID 5 / RAID 6' },
+      { key: 'Redundancia',        val: 'Dual controller AA' },
+      { key: 'Protocolo primario', val: protoMap[protocol] || 'FC / iSCSI / NVMe-oF' },
+      { key: 'IOPS destino',       val: iopsMap[iops] || '—' },
+      { key: 'Latencia típica',    val: '< 200 µs' },
+      { key: 'Escalabilidad máx.', val: '~1 PB efectivo' }
     ],
     fs7300: [
-      { key: 'Capacidad sugerida',  val: `${recCap} TB (efectivo)` },
-      { key: 'Tipo de drive',       val: 'NVMe Flash (SSD)' },
-      { key: 'RAID / Protección',   val: isCritical ? 'RAID 6 + HyperSwap' : 'RAID 5 / RAID 6' },
-      { key: 'Redundancia',         val: 'Dual controller AA' },
-      { key: 'Protocolos',          val: 'FC, iSCSI, NVMe-oF, RoCE' },
-      { key: 'Latencia típica',     val: '< 150 µs' },
-      { key: 'Disponibilidad',      val: '99.9999%' },
-      { key: 'Escalabilidad máx.',  val: '~4 PB efectivo' }
+      { key: 'Capacidad sugerida', val: `${recCap} TB (efectivo)` },
+      { key: 'Tipo de drive',      val: 'NVMe Flash (SSD)' },
+      { key: 'RAID / Protección',  val: isCritical ? 'RAID 6 + HyperSwap' : 'RAID 5 / RAID 6' },
+      { key: 'Redundancia',        val: 'Dual controller AA' },
+      { key: 'Protocolo primario', val: protoMap[protocol] || 'FC / iSCSI / NVMe-oF / RoCE' },
+      { key: 'IOPS destino',       val: iopsMap[iops] || '—' },
+      { key: 'Latencia típica',    val: '< 150 µs' },
+      { key: 'Escalabilidad máx.', val: '~4 PB efectivo' }
     ],
     fs9500: [
-      { key: 'Capacidad sugerida',  val: `${recCap} TB (efectivo)` },
-      { key: 'Tipo de drive',       val: 'NVMe Flash (SCM + QLC)' },
-      { key: 'RAID / Protección',   val: 'RAID 5/6 + Repl. síncrona' },
-      { key: 'Redundancia',         val: 'Dual controller AA + Metro Mirror' },
-      { key: 'Protocolos',          val: 'FC, iSCSI, NVMe-oF, FCoE' },
-      { key: 'Latencia típica',     val: '< 100 µs' },
-      { key: 'Disponibilidad',      val: '99.9999%' },
-      { key: 'Escalabilidad máx.',  val: '~32 PB efectivo' }
+      { key: 'Capacidad sugerida', val: `${recCap} TB (efectivo)` },
+      { key: 'Tipo de drive',      val: 'NVMe Flash (SCM + QLC)' },
+      { key: 'RAID / Protección',  val: 'RAID 5/6 + Repl. síncrona' },
+      { key: 'Redundancia',        val: 'Dual controller AA + Metro Mirror' },
+      { key: 'Protocolo primario', val: protoMap[protocol] || 'FC / iSCSI / NVMe-oF / FCoE' },
+      { key: 'IOPS destino',       val: iopsMap[iops] || '—' },
+      { key: 'Latencia típica',    val: '< 100 µs' },
+      { key: 'Escalabilidad máx.', val: '~32 PB efectivo' }
     ],
     sv5100: [
-      { key: 'Capacidad sugerida',  val: `${recCap} TB (efectivo)` },
-      { key: 'Tipo de drive',       val: 'SSD cache + SAS/SATA HDD' },
-      { key: 'RAID / Protección',   val: 'RAID 5 / RAID 6 + Easy Tier' },
-      { key: 'Redundancia',         val: 'Dual controller AA' },
-      { key: 'Protocolos',          val: 'FC, iSCSI, NFS, SMB, FCoE' },
-      { key: 'Tiering automático',  val: 'SSD / SAS / SATA / Cloud' },
-      { key: 'Disponibilidad',      val: '99.999%' },
-      { key: 'Escalabilidad máx.',  val: '~2 PB efectivo' }
+      { key: 'Capacidad sugerida', val: `${recCap} TB (efectivo)` },
+      { key: 'Tipo de drive',      val: 'NVMe SSD cache + SAS/SATA HDD' },
+      { key: 'RAID / Protección',  val: 'RAID 5 / RAID 6 + Easy Tier' },
+      { key: 'Redundancia',        val: 'Dual controller AA' },
+      { key: 'Protocolo primario', val: protoMap[protocol] || 'FC / iSCSI / NFS / SMB' },
+      { key: 'IOPS destino',       val: iopsMap[iops] || '—' },
+      { key: 'Tiering automático', val: 'SSD / SAS / SATA / Cloud' },
+      { key: 'Escalabilidad máx.', val: '~2 PB efectivo' }
     ],
     ibmcos: [
-      { key: 'Capacidad sugerida',  val: `${recCap} TB (raw)` },
-      { key: 'Tipo de drive',       val: 'SATA HDD / NVMe cache' },
-      { key: 'RAID / Protección',   val: 'Erasure Coding (configurable)' },
-      { key: 'Redundancia',         val: 'Multi-nodo / Multi-sitio' },
-      { key: 'Protocolos',          val: 'S3, NFS, SMB, HDFS' },
-      { key: 'Ciclo de vida',       val: 'Tiering caliente/tibio/frío' },
-      { key: 'Disponibilidad',      val: '99.999999999% (datos)' },
-      { key: 'Escalabilidad máx.',  val: 'Sin límite (exabytes)' }
+      { key: 'Capacidad sugerida', val: `${recCap} TB (raw)` },
+      { key: 'Tipo de drive',      val: 'SATA HDD / NVMe cache' },
+      { key: 'RAID / Protección',  val: 'Erasure Coding (configurable)' },
+      { key: 'Redundancia',        val: 'Multi-nodo / Multi-sitio' },
+      { key: 'Protocolo primario', val: 'S3, NFS, SMB, HDFS' },
+      { key: 'IOPS destino',       val: iopsMap[iops] || '—' },
+      { key: 'Ciclo de vida',      val: 'Tiering caliente/tibio/frío' },
+      { key: 'Escalabilidad máx.', val: 'Sin límite (exabytes)' }
     ]
   };
 
@@ -1002,19 +1258,42 @@ function buildSpecs(key) {
 //  BUILD RESULTS
 // ═══════════════════════════════════════════════════
 function buildResults() {
-  const { currentTB, growthPct, servers, loads, availability, budget } = state;
+  const { clientName, currentTB, growthPct, servers, loads, availability, budget, iops, protocol, hypervisor, existingIBM } = state;
 
   const proj3y = currentTB * Math.pow(1 + growthPct / 100, 3);
   const recCap = Math.ceil(proj3y * 1.3);
 
+  // Client band
+  const dateStr = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+  document.getElementById('rcb-client').textContent = clientName;
+  document.getElementById('rcb-date').textContent   = dateStr;
+  document.getElementById('print-client-name').textContent = clientName;
+
+  // Projection
   document.getElementById('proj-current').innerHTML = `${fmtTB(currentTB)}<span>TB</span>`;
   document.getElementById('proj-3y').innerHTML      = `${fmtTB(proj3y)}<span>TB</span>`;
   document.getElementById('proj-growth').innerHTML  = `${growthPct}<span>%</span>`;
   document.getElementById('proj-rec').innerHTML     = `${fmtTB(recCap)}<span>TB</span>`;
 
-  const ranking = scoreRecommendations();
-  const badgeClass  = ['best', 'alt', 'economic'];
-  const badgeLabel  = { best: 'Mejor opción', alt: 'Alternativa sólida', economic: 'Opción económica' };
+  // Context tags
+  const iopsLabels  = { low: 'IOPS Baja', medium: 'IOPS Media', high: 'IOPS Alta', veryhigh: 'IOPS Muy Alta' };
+  const protoLabels = { fc: 'Fibre Channel', iscsi: 'iSCSI', nvme: 'NVMe-oF', any: 'Sin preferencia proto.' };
+  const hvLabels    = { vmware: 'VMware vSphere', hyperv: 'Hyper-V', bare: 'Bare Metal', mixed: 'Mixto' };
+  const ibmLabels   = { yes: 'IBM Storage existente', no: 'Entorno nuevo' };
+
+  const tags = [
+    { label: iopsLabels[iops], hi: iops === 'veryhigh' || iops === 'high' },
+    { label: protoLabels[protocol], hi: protocol === 'nvme' },
+    { label: hvLabels[hypervisor], hi: hypervisor === 'vmware' },
+    { label: ibmLabels[existingIBM], hi: existingIBM === 'yes' }
+  ];
+  document.getElementById('context-tags').innerHTML =
+    tags.map(t => `<div class="ctx-tag${t.hi ? ' highlight' : ''}">${t.label}</div>`).join('');
+
+  // Cards
+  const ranking    = scoreRecommendations();
+  const badgeClass = ['best', 'alt', 'economic'];
+  const badgeLabel = { best: 'Mejor opción', alt: 'Alternativa sólida', economic: 'Opción económica' };
 
   const container = document.getElementById('cards-container');
   container.innerHTML = '';
@@ -1059,12 +1338,17 @@ function buildResults() {
   const lMap = { vms: 'Máquinas Virtuales', backup: 'Backup/Respaldo', files: 'Archivos/NAS', db: 'Bases de Datos' };
 
   const summaryItems = [
+    { key: 'Cliente',           val: clientName },
     { key: 'Servidores',        val: servers },
     { key: 'Datos actuales',    val: `${currentTB} TB` },
     { key: 'Crecimiento anual', val: `${growthPct}%` },
     { key: 'Proyección 3 años', val: `${fmtTB(proj3y)} TB` },
-    { key: 'Cap. recomendada',  val: `${fmtTB(recCap)} TB (+30% buffer)` },
+    { key: 'Cap. recomendada',  val: `${fmtTB(recCap)} TB (+30%)` },
     { key: 'Tipo de carga',     val: loads.map(l => lMap[l]).join(', ') },
+    { key: 'IOPS requeridas',   val: iopsLabels[iops] },
+    { key: 'Protocolo',         val: protoLabels[protocol] },
+    { key: 'Hipervisor',        val: hvLabels[hypervisor] },
+    { key: 'IBM existente',     val: ibmLabels[existingIBM] },
     { key: 'Disponibilidad',    val: aMap[availability] },
     { key: 'Presupuesto',       val: bMap[budget] }
   ];
@@ -1072,9 +1356,8 @@ function buildResults() {
   document.getElementById('summary-grid').innerHTML =
     summaryItems.map(d => `<div class="summary-item"><div class="summary-key">${d.key}</div><div class="summary-val">${d.val}</div></div>`).join('');
 
-  const dateStr = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
   document.getElementById('results-sub').textContent =
-    `${servers} servidor${servers !== 1 ? 'es' : ''} · ${currentTB} TB actuales · Portfolio IBM Storage · ${dateStr}`;
+    `${clientName} · ${servers} servidor${servers !== 1 ? 'es' : ''} · ${currentTB} TB actuales · ${dateStr}`;
 }
 
 function fmtTB(n) {
@@ -1087,12 +1370,15 @@ function fmtTB(n) {
 // ═══════════════════════════════════════════════════
 function newSimulation() {
   Object.keys(state).forEach(k => { state[k] = Array.isArray(state[k]) ? [] : null; });
-  document.getElementById('num-servers').value = '';
-  document.getElementById('current-tb').value  = '';
-  document.getElementById('growth-pct').value  = '';
+  state.clientName = '';
+  ['client-name','num-servers','current-tb','growth-pct'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
   document.querySelectorAll('#step-4 input[type="checkbox"]').forEach(c => c.checked = false);
-  document.querySelectorAll('input[name="avail"]').forEach(r => r.checked = false);
-  document.querySelectorAll('input[name="budget"]').forEach(r => r.checked = false);
+  ['iops','protocol','hypervisor','existing-ibm','avail','budget'].forEach(name => {
+    document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.checked = false);
+  });
   document.getElementById('results-section').classList.remove('show');
   document.getElementById('wizard-container').style.display = '';
   document.getElementById('progress-wrap').style.display    = '';
