@@ -3,27 +3,26 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>CORESOLUTIONS — Storage Sizing Simulator</title>
+<title>CORESOLUTIONS — IBM Storage Sizing Simulator</title>
 <style>
-  /* ── Reset & Base ── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --blue:      #0057B8;
-    --blue-light:#1a7fe8;
-    --blue-dim:  #003d82;
-    --bg:        #000000;
-    --surface:   #0a0a0a;
-    --surface2:  #111111;
-    --surface3:  #1a1a1a;
-    --border:    #222222;
-    --border2:   #2a2a2a;
-    --text:      #ffffff;
-    --text-dim:  #8a8a8a;
-    --text-mid:  #b0b0b0;
-    --green:     #00c896;
-    --amber:     #f59e0b;
-    --font:      'Courier New', Courier, monospace;
+    --blue:       #0057B8;
+    --blue-light: #1a7fe8;
+    --blue-dim:   #003d82;
+    --bg:         #000000;
+    --surface:    #0a0a0a;
+    --surface2:   #111111;
+    --surface3:   #1a1a1a;
+    --border:     #222222;
+    --border2:    #2a2a2a;
+    --text:       #ffffff;
+    --text-dim:   #8a8a8a;
+    --text-mid:   #b0b0b0;
+    --green:      #00c896;
+    --amber:      #f59e0b;
+    --font:       'Courier New', Courier, monospace;
   }
 
   html { scroll-behavior: smooth; }
@@ -39,129 +38,85 @@
     padding: 0 16px 60px;
   }
 
-  /* ── Print styles ── */
+  /* ── Print ── */
   @media print {
     body { background: #fff; color: #000; padding: 0; }
     .no-print { display: none !important; }
     .print-only { display: block !important; }
-    #wizard-container { display: none !important; }
+    #wizard-container, #progress-wrap { display: none !important; }
     #results-section { display: block !important; max-width: 100%; }
-    .card { border: 1px solid #ccc; break-inside: avoid; }
-    .badge { border: 1px solid #000; }
-    header { border-bottom: 2px solid #000; }
-    .result-card { page-break-inside: avoid; }
+    .result-card { border: 1px solid #ccc; page-break-inside: avoid; }
+    .badge { border: 1px solid #000 !important; }
+    .spec-item { border: 1px solid #ddd; }
+    .projection-band { border: 1px solid #ccc; }
+    .summary-section { border: 1px solid #ccc; }
+    .card-why, .spec-val, .summary-val, .proj-value { color: #000 !important; }
+    .card-rank, .card-model, .spec-key, .summary-key,
+    .proj-label, .card-section-label, .results-title { color: #555 !important; }
   }
-
   .print-only { display: none; }
 
   /* ── Header ── */
   header {
     width: 100%;
-    max-width: 860px;
+    max-width: 880px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 28px 0 24px;
     border-bottom: 1px solid var(--border2);
     margin-bottom: 36px;
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
+    flex-wrap: wrap;
     gap: 12px;
   }
 
-  .logo-icon {
-    width: 38px;
-    height: 38px;
-    background: var(--blue);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    clip-path: polygon(0 0, 85% 0, 100% 15%, 100% 100%, 15% 100%, 0 85%);
-  }
+  .logo { display: flex; align-items: center; gap: 12px; }
 
+  .logo-icon {
+    width: 38px; height: 38px;
+    background: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    clip-path: polygon(0 0,85% 0,100% 15%,100% 100%,15% 100%,0 85%);
+  }
   .logo-icon svg { width: 22px; height: 22px; fill: white; }
 
-  .logo-text {
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    color: var(--text);
-  }
-
+  .logo-text { font-size: 18px; font-weight: 700; letter-spacing: 0.18em; }
   .logo-text span { color: var(--blue-light); }
 
+  .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
   .header-badge {
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    color: var(--text-dim);
-    border: 1px solid var(--border2);
-    padding: 4px 10px;
-    text-transform: uppercase;
+    font-size: 10px; letter-spacing: 0.12em; color: var(--text-dim);
+    border: 1px solid var(--border2); padding: 4px 10px; text-transform: uppercase;
+  }
+  .header-ibm {
+    font-size: 9px; letter-spacing: 0.1em; color: var(--blue-light);
+    text-transform: uppercase; opacity: 0.7;
   }
 
-  /* ── Main container ── */
-  #app {
-    width: 100%;
-    max-width: 860px;
-  }
+  /* ── App ── */
+  #app { width: 100%; max-width: 880px; }
 
-  /* ── Progress bar ── */
-  .progress-wrap {
-    margin-bottom: 36px;
-  }
-
+  /* ── Progress ── */
+  .progress-wrap { margin-bottom: 36px; }
   .progress-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
   }
-
-  .progress-label {
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    color: var(--text-dim);
-    text-transform: uppercase;
-  }
-
-  .progress-counter {
-    font-size: 11px;
-    color: var(--blue-light);
-    letter-spacing: 0.1em;
-  }
-
-  .progress-track {
-    height: 3px;
-    background: var(--surface3);
-    position: relative;
-    overflow: hidden;
-  }
-
+  .progress-label { font-size: 11px; letter-spacing: 0.14em; color: var(--text-dim); text-transform: uppercase; }
+  .progress-counter { font-size: 11px; color: var(--blue-light); letter-spacing: 0.1em; }
+  .progress-track { height: 3px; background: var(--surface3); overflow: hidden; }
   .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--blue), var(--blue-light));
     transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
     width: 0%;
   }
-
-  .steps-dots {
-    display: flex;
-    gap: 8px;
-    margin-top: 14px;
-  }
-
+  .steps-dots { display: flex; gap: 8px; margin-top: 14px; }
   .step-dot {
-    width: 8px;
-    height: 8px;
-    border: 1px solid var(--border2);
-    background: transparent;
-    transition: all 0.3s ease;
-    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    width: 8px; height: 8px;
+    border: 1px solid var(--border2); background: transparent;
+    transition: all 0.3s;
+    clip-path: polygon(50% 0%,100% 50%,50% 100%,0% 50%);
   }
-
   .step-dot.active { background: var(--blue); border-color: var(--blue); }
   .step-dot.done   { background: var(--blue-dim); border-color: var(--blue-dim); }
 
@@ -172,17 +127,11 @@
     padding: 40px 44px;
     display: none;
     animation: fadeSlide 0.35s ease forwards;
-    position: relative;
-    overflow: hidden;
+    position: relative; overflow: hidden;
   }
-
   .step-card.active { display: block; }
-
   .step-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
     background: linear-gradient(90deg, var(--blue), transparent);
   }
 
@@ -191,598 +140,261 @@
     to   { opacity: 1; transform: translateX(0); }
   }
 
-  .step-number {
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--blue-light);
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
+  .step-number { font-size: 10px; letter-spacing: 0.2em; color: var(--blue-light); text-transform: uppercase; margin-bottom: 8px; }
+  .step-title  { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 6px; letter-spacing: 0.04em; }
+  .step-subtitle { font-size: 12px; color: var(--text-dim); margin-bottom: 32px; letter-spacing: 0.06em; }
 
-  .step-title {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 6px;
-    letter-spacing: 0.04em;
-  }
-
-  .step-subtitle {
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-bottom: 32px;
-    letter-spacing: 0.06em;
-  }
-
-  /* ── Form elements ── */
+  /* ── Inputs ── */
   .field-group { margin-bottom: 24px; }
 
   label {
-    display: block;
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    color: var(--text-mid);
-    text-transform: uppercase;
-    margin-bottom: 10px;
+    display: block; font-size: 11px; letter-spacing: 0.14em;
+    color: var(--text-mid); text-transform: uppercase; margin-bottom: 10px;
   }
 
-  input[type="number"], input[type="text"] {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    color: var(--text);
-    font-family: var(--font);
-    font-size: 20px;
-    padding: 14px 18px;
-    outline: none;
+  input[type="number"] {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border2);
+    color: var(--text); font-family: var(--font); font-size: 20px;
+    padding: 14px 18px; outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
     -moz-appearance: textfield;
   }
-
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
-
-  input:focus {
-    border-color: var(--blue);
-    box-shadow: 0 0 0 2px rgba(0,87,184,0.18);
-  }
-
+  input:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(0,87,184,0.18); }
   input::placeholder { color: var(--border2); }
 
-  .input-hint {
-    font-size: 10px;
-    color: var(--text-dim);
-    margin-top: 6px;
-    letter-spacing: 0.08em;
-  }
+  .input-hint { font-size: 10px; color: var(--text-dim); margin-top: 6px; letter-spacing: 0.08em; }
 
   /* ── Checkbox grid ── */
   .checkbox-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
     gap: 10px;
   }
-
-  .check-item {
-    position: relative;
-  }
-
-  .check-item input[type="checkbox"] {
-    position: absolute;
-    opacity: 0;
-    width: 0; height: 0;
-  }
-
+  .check-item { position: relative; }
+  .check-item input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
   .check-item label {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    padding: 14px 16px;
-    cursor: pointer;
+    display: flex; align-items: center; gap: 12px;
+    background: var(--surface2); border: 1px solid var(--border2);
+    padding: 14px 16px; cursor: pointer;
     transition: border-color 0.2s, background 0.2s;
-    text-transform: none;
-    font-size: 13px;
-    letter-spacing: 0.06em;
-    color: var(--text-mid);
-    margin: 0;
-    user-select: none;
+    text-transform: none; font-size: 13px; letter-spacing: 0.06em;
+    color: var(--text-mid); margin: 0; user-select: none;
   }
-
   .check-item input:checked + label {
-    border-color: var(--blue);
-    background: rgba(0,87,184,0.1);
-    color: var(--text);
+    border-color: var(--blue); background: rgba(0,87,184,0.1); color: var(--text);
   }
-
   .check-box {
-    width: 14px; height: 14px;
-    border: 1px solid var(--border2);
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
+    width: 14px; height: 14px; border: 1px solid var(--border2);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
   }
-
-  .check-item input:checked + label .check-box {
-    background: var(--blue);
-    border-color: var(--blue);
-  }
-
+  .check-item input:checked + label .check-box { background: var(--blue); border-color: var(--blue); }
   .check-box::after {
-    content: '';
-    width: 6px; height: 6px;
-    background: white;
-    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
-    opacity: 0;
-    transition: opacity 0.2s;
+    content: ''; width: 6px; height: 6px; background: white;
+    clip-path: polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0%,43% 62%);
+    opacity: 0; transition: opacity 0.2s;
   }
-
   .check-item input:checked + label .check-box::after { opacity: 1; }
-
   .check-icon { font-size: 18px; }
 
   /* ── Radio cards ── */
-  .radio-cards {
-    display: grid;
-    gap: 10px;
-  }
-
-  .radio-card {
-    position: relative;
-  }
-
-  .radio-card input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    width: 0; height: 0;
-  }
-
+  .radio-cards { display: grid; gap: 10px; }
+  .radio-card { position: relative; }
+  .radio-card input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
   .radio-card label {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    padding: 16px 20px;
-    cursor: pointer;
+    display: flex; align-items: flex-start; gap: 16px;
+    background: var(--surface2); border: 1px solid var(--border2);
+    padding: 16px 20px; cursor: pointer;
     transition: border-color 0.2s, background 0.2s;
-    text-transform: none;
-    font-size: 13px;
-    letter-spacing: 0.04em;
-    color: var(--text-mid);
-    margin: 0;
-    user-select: none;
+    text-transform: none; font-size: 13px; letter-spacing: 0.04em;
+    color: var(--text-mid); margin: 0; user-select: none;
   }
-
   .radio-card input:checked + label {
-    border-color: var(--blue);
-    background: rgba(0,87,184,0.1);
-    color: var(--text);
+    border-color: var(--blue); background: rgba(0,87,184,0.1); color: var(--text);
   }
-
   .radio-indicator {
-    width: 16px; height: 16px;
-    border: 1px solid var(--border2);
-    border-radius: 50%;
-    flex-shrink: 0;
-    margin-top: 2px;
-    position: relative;
-    transition: all 0.2s;
+    width: 16px; height: 16px; border: 1px solid var(--border2); border-radius: 50%;
+    flex-shrink: 0; margin-top: 2px; transition: all 0.2s;
   }
-
   .radio-card input:checked + label .radio-indicator {
-    border-color: var(--blue);
-    background: var(--blue);
+    border-color: var(--blue); background: var(--blue);
     box-shadow: inset 0 0 0 3px var(--surface2);
   }
-
   .radio-card-content { flex: 1; }
   .radio-card-title { font-size: 14px; color: var(--text); margin-bottom: 3px; }
   .radio-card-desc  { font-size: 11px; color: var(--text-dim); letter-spacing: 0.06em; }
 
-  /* ── Navigation ── */
+  /* ── Buttons ── */
   .nav-buttons {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 36px;
-    gap: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 36px; gap: 12px;
   }
-
   .btn {
-    font-family: var(--font);
-    font-size: 12px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    padding: 14px 28px;
-    border: 1px solid;
-    cursor: pointer;
-    transition: all 0.2s;
-    outline: none;
-    position: relative;
-    overflow: hidden;
+    font-family: var(--font); font-size: 12px; letter-spacing: 0.16em;
+    text-transform: uppercase; padding: 14px 28px; border: 1px solid;
+    cursor: pointer; transition: all 0.2s; outline: none; position: relative; overflow: hidden;
   }
-
   .btn::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(255,255,255,0.05);
-    opacity: 0;
-    transition: opacity 0.2s;
+    content: ''; position: absolute; inset: 0;
+    background: rgba(255,255,255,0.05); opacity: 0; transition: opacity 0.2s;
   }
-
   .btn:hover::after { opacity: 1; }
-
-  .btn-primary {
-    background: var(--blue);
-    border-color: var(--blue);
-    color: white;
-  }
-
+  .btn-primary { background: var(--blue); border-color: var(--blue); color: white; }
   .btn-primary:hover { background: var(--blue-light); border-color: var(--blue-light); }
-
-  .btn-secondary {
-    background: transparent;
-    border-color: var(--border2);
-    color: var(--text-dim);
-  }
-
+  .btn-secondary { background: transparent; border-color: var(--border2); color: var(--text-dim); }
   .btn-secondary:hover { border-color: var(--text-dim); color: var(--text); }
-
-  .btn-ghost {
-    background: transparent;
-    border-color: transparent;
-    color: var(--text-dim);
-    padding: 14px 0;
-  }
-
+  .btn-ghost { background: transparent; border-color: transparent; color: var(--text-dim); padding: 14px 0; }
   .btn-ghost:hover { color: var(--text); }
-
-  .btn:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-  }
-
   .btn-icon { margin-left: 8px; }
 
-  /* ── Error message ── */
-  .error-msg {
-    font-size: 11px;
-    color: #ff5555;
-    letter-spacing: 0.08em;
-    margin-top: 8px;
-    display: none;
-  }
-
+  /* ── Error ── */
+  .error-msg { font-size: 11px; color: #ff5555; letter-spacing: 0.08em; margin-top: 8px; display: none; }
   .error-msg.show { display: block; }
 
-  /* ── Results section ── */
-  #results-section {
-    width: 100%;
-    max-width: 860px;
-    display: none;
-    animation: fadeSlide 0.4s ease forwards;
+  /* ── Corner deco ── */
+  .corner-deco {
+    position: absolute; bottom: 0; right: 0; width: 48px; height: 48px;
+    border-top: 1px solid var(--border2); border-left: 1px solid var(--border2);
+    pointer-events: none; opacity: 0.4;
   }
 
-  #results-section.show { display: block; }
+  /* ── Processing ── */
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+  .processing {
+    text-align: center; padding: 60px 24px;
+    font-size: 12px; letter-spacing: 0.2em; color: var(--text-dim); text-transform: uppercase;
+    animation: pulse 1.2s ease infinite; display: none;
+  }
+  .processing.show { display: block; }
+
+  /* ── Results ── */
+  #results-section { width: 100%; max-width: 880px; display: none; }
+  #results-section.show { display: block; animation: fadeSlide 0.4s ease forwards; }
 
   .results-header {
-    margin-bottom: 32px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--border2);
+    margin-bottom: 28px; padding-bottom: 22px; border-bottom: 1px solid var(--border2);
   }
-
-  .results-title {
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    color: var(--blue-light);
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-
-  .results-headline {
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
-
-  .results-sub {
-    font-size: 12px;
-    color: var(--text-dim);
-    letter-spacing: 0.06em;
-  }
+  .results-title { font-size: 10px; letter-spacing: 0.22em; color: var(--blue-light); text-transform: uppercase; margin-bottom: 8px; }
+  .results-headline { font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .results-sub { font-size: 12px; color: var(--text-dim); letter-spacing: 0.06em; }
 
   /* ── Projection band ── */
   .projection-band {
-    background: var(--surface2);
-    border: 1px solid var(--border2);
+    background: var(--surface2); border: 1px solid var(--border2);
     border-left: 3px solid var(--blue);
-    padding: 16px 22px;
-    margin-bottom: 32px;
-    display: flex;
-    gap: 32px;
-    flex-wrap: wrap;
+    padding: 16px 22px; margin-bottom: 32px;
+    display: flex; gap: 0; flex-wrap: wrap;
   }
-
-  .proj-stat { flex: 1; min-width: 120px; }
-
-  .proj-label {
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-
-  .proj-value {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--text);
-  }
-
-  .proj-value span { font-size: 13px; color: var(--text-dim); margin-left: 4px; }
+  .proj-stat { flex: 1; min-width: 130px; padding: 6px 18px 6px 0; }
+  .proj-stat + .proj-stat { border-left: 1px solid var(--border2); padding-left: 18px; }
+  .proj-label { font-size: 10px; letter-spacing: 0.14em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 4px; }
+  .proj-value { font-size: 22px; font-weight: 700; color: var(--text); }
+  .proj-value span { font-size: 12px; color: var(--text-dim); margin-left: 4px; }
 
   /* ── Result cards ── */
   .result-card {
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    margin-bottom: 18px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.2s;
-    animation: fadeSlide 0.4s ease forwards;
-    opacity: 0;
+    background: var(--surface); border: 1px solid var(--border2);
+    margin-bottom: 18px; position: relative; overflow: hidden;
+    opacity: 0; animation: fadeSlide 0.4s ease forwards;
   }
-
   .result-card:nth-child(1) { animation-delay: 0.05s; }
-  .result-card:nth-child(2) { animation-delay: 0.15s; }
-  .result-card:nth-child(3) { animation-delay: 0.25s; }
-
+  .result-card:nth-child(2) { animation-delay: 0.18s; }
+  .result-card:nth-child(3) { animation-delay: 0.31s; }
   .result-card.best { border-color: var(--blue); }
-
   .result-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
   }
-
-  .result-card.best::before    { background: linear-gradient(90deg, var(--blue), var(--blue-light)); }
-  .result-card.alt::before     { background: linear-gradient(90deg, var(--green), transparent); }
-  .result-card.economic::before{ background: linear-gradient(90deg, var(--amber), transparent); }
+  .result-card.best::before     { background: linear-gradient(90deg, var(--blue), var(--blue-light)); }
+  .result-card.alt::before      { background: linear-gradient(90deg, var(--green), transparent); }
+  .result-card.economic::before { background: linear-gradient(90deg, var(--amber), transparent); }
 
   .card-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    padding: 24px 28px 20px;
-    border-bottom: 1px solid var(--border2);
-    gap: 12px;
-    flex-wrap: wrap;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 24px 28px 20px; border-bottom: 1px solid var(--border2);
+    gap: 12px; flex-wrap: wrap;
   }
-
   .card-title-group { flex: 1; }
+  .card-rank  { font-size: 10px; letter-spacing: 0.16em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 4px; }
+  .card-name  { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: 0.04em; }
+  .card-model { font-size: 11px; color: var(--text-dim); margin-top: 2px; letter-spacing: 0.08em; }
 
-  .card-rank {
-    font-size: 10px;
-    letter-spacing: 0.16em;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-
-  .card-name {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: 0.04em;
-  }
-
-  .card-model {
-    font-size: 11px;
-    color: var(--text-dim);
-    margin-top: 2px;
-    letter-spacing: 0.08em;
-  }
-
-  /* ── Badge ── */
   .badge {
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    padding: 6px 14px;
-    font-weight: 700;
-    white-space: nowrap;
-    align-self: flex-start;
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 6px 14px; font-weight: 700; white-space: nowrap; align-self: flex-start;
   }
-
   .badge-best     { background: var(--blue); color: white; }
   .badge-alt      { background: rgba(0,200,150,0.12); color: var(--green); border: 1px solid var(--green); }
   .badge-economic { background: rgba(245,158,11,0.12); color: var(--amber); border: 1px solid var(--amber); }
 
   .card-body { padding: 22px 28px; }
-
-  .card-section { margin-bottom: 20px; }
-
+  .card-section { margin-bottom: 22px; }
   .card-section-label {
-    font-size: 10px;
-    letter-spacing: 0.16em;
-    color: var(--blue-light);
-    text-transform: uppercase;
-    margin-bottom: 8px;
+    font-size: 10px; letter-spacing: 0.16em; color: var(--blue-light);
+    text-transform: uppercase; margin-bottom: 10px;
   }
+  .card-why { font-size: 13px; color: var(--text-mid); line-height: 1.75; letter-spacing: 0.03em; }
 
-  .card-why {
-    font-size: 13px;
-    color: var(--text-mid);
-    line-height: 1.7;
-    letter-spacing: 0.03em;
-  }
-
-  /* ── Specs grid ── */
+  /* ── Specs ── */
   .specs-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 10px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 10px;
   }
+  .spec-item { background: var(--surface2); border: 1px solid var(--border2); padding: 12px 14px; }
+  .spec-key  { font-size: 10px; letter-spacing: 0.12em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 4px; }
+  .spec-val  { font-size: 13px; color: var(--text); font-weight: 600; letter-spacing: 0.04em; }
 
-  .spec-item {
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    padding: 12px 14px;
-  }
-
-  .spec-key {
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-
-  .spec-val {
-    font-size: 13px;
-    color: var(--text);
-    font-weight: 600;
-    letter-spacing: 0.04em;
-  }
-
-  /* ── Summary section ── */
+  /* ── Summary ── */
   .summary-section {
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    padding: 24px 28px;
-    margin-bottom: 28px;
+    background: var(--surface2); border: 1px solid var(--border2);
+    padding: 22px 28px; margin-bottom: 28px;
   }
-
-  .summary-title {
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-
-  .summary-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 12px;
-  }
-
-  .summary-item { }
-
-  .summary-key {
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    margin-bottom: 3px;
-  }
-
-  .summary-val {
-    font-size: 13px;
-    color: var(--text);
-    letter-spacing: 0.04em;
-  }
+  .summary-title { font-size: 10px; letter-spacing: 0.18em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 16px; }
+  .summary-grid  { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+  .summary-key   { font-size: 10px; letter-spacing: 0.12em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 3px; }
+  .summary-val   { font-size: 13px; color: var(--text); letter-spacing: 0.04em; }
 
   /* ── Action bar ── */
-  .action-bar {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 8px;
-  }
+  .action-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
 
-  /* ── Divider ── */
-  .divider {
-    height: 1px;
-    background: var(--border2);
-    margin: 32px 0;
-  }
-
-  /* ── Scanline overlay (decorative) ── */
+  /* ── Scanline ── */
   body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.04) 2px,
-      rgba(0,0,0,0.04) 4px
-    );
-    pointer-events: none;
-    z-index: 9999;
+    content: ''; position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px);
+    pointer-events: none; z-index: 9999;
   }
-
-  /* ── Corner decoration ── */
-  .corner-deco {
-    position: absolute;
-    bottom: 0; right: 0;
-    width: 48px; height: 48px;
-    border-top: 1px solid var(--border2);
-    border-left: 1px solid var(--border2);
-    pointer-events: none;
-    opacity: 0.4;
-  }
-
-  /* ── Tooltip / loading pulse ── */
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0.4; }
-  }
-
-  .processing {
-    text-align: center;
-    padding: 48px 24px;
-    font-size: 12px;
-    letter-spacing: 0.16em;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    animation: pulse 1.2s ease infinite;
-    display: none;
-  }
-
-  .processing.show { display: block; }
 
   /* ── Responsive ── */
-  @media (max-width: 600px) {
-    header { flex-direction: column; align-items: flex-start; gap: 10px; }
-    .step-card { padding: 28px 22px; }
-    .card-header { padding: 18px 20px 14px; }
-    .card-body   { padding: 18px 20px; }
-    .summary-section { padding: 18px 20px; }
-    .projection-band { padding: 14px 18px; gap: 20px; }
-    .btn { padding: 12px 20px; }
+  @media (max-width: 620px) {
+    .step-card { padding: 28px 20px; }
+    .card-header { padding: 18px 18px 14px; }
+    .card-body   { padding: 18px 18px; }
+    .summary-section { padding: 18px 18px; }
+    .proj-stat + .proj-stat { border-left: none; border-top: 1px solid var(--border2); padding-left: 0; padding-top: 12px; }
     .nav-buttons { flex-wrap: wrap; }
+    header { padding: 20px 0 18px; }
   }
 </style>
 </head>
 <body>
 
+<!-- ── Header ── -->
 <header class="no-print">
   <div class="logo">
     <div class="logo-icon">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
-        <rect x="19" y="5" width="3" height="14" rx="0" opacity=".5"/>
-      </svg>
+      <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/><rect x="19" y="5" width="3" height="14" opacity=".5"/></svg>
     </div>
     <div class="logo-text">CORE<span>SOLUTIONS</span></div>
   </div>
-  <div class="header-badge">Storage Sizing Simulator</div>
+  <div class="header-right">
+    <div class="header-badge">IBM Storage Sizing Simulator</div>
+    <div class="header-ibm">&#9632; Portfolio IBM Storage exclusivo</div>
+  </div>
 </header>
 
 <!-- Print header -->
-<div class="print-only" style="padding:20px 0 16px; border-bottom:2px solid #000; margin-bottom:24px; width:100%; max-width:860px;">
-  <div style="font-size:20px; font-weight:700; letter-spacing:0.14em;">CORESOLUTIONS</div>
-  <div style="font-size:12px; color:#555; letter-spacing:0.08em; margin-top:4px;">Storage Sizing Simulator — Recomendación Generada</div>
+<div class="print-only" style="padding:20px 0 16px;border-bottom:2px solid #000;margin-bottom:24px;width:100%;max-width:880px;">
+  <div style="font-size:20px;font-weight:700;letter-spacing:0.14em;">CORESOLUTIONS</div>
+  <div style="font-size:11px;color:#555;letter-spacing:0.08em;margin-top:4px;">IBM Storage Sizing Simulator — Recomendación Generada</div>
 </div>
 
 <div id="app">
@@ -790,7 +402,6 @@
   <!-- ── WIZARD ── -->
   <div id="wizard-container" class="no-print">
 
-    <!-- Progress -->
     <div class="progress-wrap" id="progress-wrap">
       <div class="progress-header">
         <span class="progress-label">Progreso del análisis</span>
@@ -802,123 +413,97 @@
       <div class="steps-dots" id="steps-dots"></div>
     </div>
 
-    <!-- Step 1 — Servidores -->
+    <!-- Paso 1 — Servidores -->
     <div class="step-card active" id="step-1">
       <div class="corner-deco"></div>
       <div class="step-number">Paso 01 / 06</div>
       <div class="step-title">Infraestructura del cliente</div>
       <div class="step-subtitle">Información base del entorno a dimensionar</div>
-
       <div class="field-group">
         <label for="num-servers">Número de servidores</label>
         <input type="number" id="num-servers" placeholder="ej. 12" min="1" max="9999" />
         <div class="input-hint">&#9632; Servidores físicos o virtualizados que accederán al storage</div>
         <div class="error-msg" id="err-servers">Ingresa un número válido mayor a 0</div>
       </div>
-
       <div class="nav-buttons">
         <span></span>
         <button class="btn btn-primary" onclick="nextStep(1)">Continuar <span class="btn-icon">›</span></button>
       </div>
     </div>
 
-    <!-- Step 2 — Datos actuales -->
+    <!-- Paso 2 — TB actuales -->
     <div class="step-card" id="step-2">
       <div class="corner-deco"></div>
       <div class="step-number">Paso 02 / 06</div>
       <div class="step-title">Volumen de datos</div>
       <div class="step-subtitle">Capacidad actual que el cliente necesita gestionar</div>
-
       <div class="field-group">
         <label for="current-tb">TB de datos actuales</label>
-        <input type="number" id="current-tb" placeholder="ej. 50" min="1" max="999999" />
-        <div class="input-hint">&#9632; Total de terabytes que el cliente maneja hoy (datos en producción + backups activos)</div>
+        <input type="number" id="current-tb" placeholder="ej. 50" min="0.1" max="999999" step="0.1" />
+        <div class="input-hint">&#9632; Total de terabytes en producción + backups activos que el cliente maneja hoy</div>
         <div class="error-msg" id="err-tb">Ingresa un valor válido en TB</div>
       </div>
-
       <div class="nav-buttons">
         <button class="btn btn-ghost" onclick="prevStep(2)">‹ Atrás</button>
         <button class="btn btn-primary" onclick="nextStep(2)">Continuar <span class="btn-icon">›</span></button>
       </div>
     </div>
 
-    <!-- Step 3 — Crecimiento -->
+    <!-- Paso 3 — Crecimiento -->
     <div class="step-card" id="step-3">
       <div class="corner-deco"></div>
       <div class="step-number">Paso 03 / 06</div>
       <div class="step-title">Proyección de crecimiento</div>
       <div class="step-subtitle">Estimado anual de incremento en datos</div>
-
       <div class="field-group">
         <label for="growth-pct">Crecimiento anual estimado (%)</label>
         <input type="number" id="growth-pct" placeholder="ej. 25" min="0" max="500" />
         <div class="input-hint">&#9632; Porcentaje de crecimiento de datos año sobre año que el cliente estima</div>
         <div class="error-msg" id="err-growth">Ingresa un porcentaje entre 0 y 500</div>
       </div>
-
       <div class="nav-buttons">
         <button class="btn btn-ghost" onclick="prevStep(3)">‹ Atrás</button>
         <button class="btn btn-primary" onclick="nextStep(3)">Continuar <span class="btn-icon">›</span></button>
       </div>
     </div>
 
-    <!-- Step 4 — Tipo de carga -->
+    <!-- Paso 4 — Tipo de carga -->
     <div class="step-card" id="step-4">
       <div class="corner-deco"></div>
       <div class="step-number">Paso 04 / 06</div>
       <div class="step-title">Tipo de carga principal</div>
-      <div class="step-subtitle">Selecciona todas las que apliquen</div>
-
+      <div class="step-subtitle">Selecciona todas las que apliquen al entorno del cliente</div>
       <div class="checkbox-grid">
         <div class="check-item">
           <input type="checkbox" id="load-vms" value="vms" />
-          <label for="load-vms">
-            <div class="check-box"></div>
-            <span class="check-icon">&#9707;</span>
-            Máquinas Virtuales
-          </label>
+          <label for="load-vms"><div class="check-box"></div><span class="check-icon">&#9707;</span> Máquinas Virtuales</label>
         </div>
         <div class="check-item">
           <input type="checkbox" id="load-backup" value="backup" />
-          <label for="load-backup">
-            <div class="check-box"></div>
-            <span class="check-icon">&#9781;</span>
-            Backup / Respaldo
-          </label>
+          <label for="load-backup"><div class="check-box"></div><span class="check-icon">&#9781;</span> Backup / Respaldo</label>
         </div>
         <div class="check-item">
           <input type="checkbox" id="load-files" value="files" />
-          <label for="load-files">
-            <div class="check-box"></div>
-            <span class="check-icon">&#9636;</span>
-            Archivos / NAS
-          </label>
+          <label for="load-files"><div class="check-box"></div><span class="check-icon">&#9636;</span> Archivos / NAS</label>
         </div>
         <div class="check-item">
           <input type="checkbox" id="load-db" value="db" />
-          <label for="load-db">
-            <div class="check-box"></div>
-            <span class="check-icon">&#9632;</span>
-            Bases de Datos
-          </label>
+          <label for="load-db"><div class="check-box"></div><span class="check-icon">&#9632;</span> Bases de Datos</label>
         </div>
       </div>
-
       <div class="error-msg" id="err-load" style="margin-top:12px;">Selecciona al menos un tipo de carga</div>
-
       <div class="nav-buttons">
         <button class="btn btn-ghost" onclick="prevStep(4)">‹ Atrás</button>
         <button class="btn btn-primary" onclick="nextStep(4)">Continuar <span class="btn-icon">›</span></button>
       </div>
     </div>
 
-    <!-- Step 5 — Disponibilidad -->
+    <!-- Paso 5 — Disponibilidad -->
     <div class="step-card" id="step-5">
       <div class="corner-deco"></div>
       <div class="step-number">Paso 05 / 06</div>
       <div class="step-title">Nivel de disponibilidad</div>
       <div class="step-subtitle">¿Cuánto impacto tiene un tiempo de inactividad no planificado?</div>
-
       <div class="radio-cards">
         <div class="radio-card">
           <input type="radio" name="avail" id="avail-basic" value="basic" />
@@ -926,7 +511,7 @@
             <div class="radio-indicator"></div>
             <div class="radio-card-content">
               <div class="radio-card-title">Básico</div>
-              <div class="radio-card-desc">Tolerancia de horas a días — entornos de desarrollo, pruebas o archivo</div>
+              <div class="radio-card-desc">Tolerancia de horas — desarrollo, pruebas, archivo frío</div>
             </div>
           </label>
         </div>
@@ -936,7 +521,7 @@
             <div class="radio-indicator"></div>
             <div class="radio-card-content">
               <div class="radio-card-title">Medio</div>
-              <div class="radio-card-desc">Tolerancia de minutos a horas — operaciones de negocio importantes</div>
+              <div class="radio-card-desc">Tolerancia de minutos — operaciones de negocio importantes</div>
             </div>
           </label>
         </div>
@@ -946,27 +531,24 @@
             <div class="radio-indicator"></div>
             <div class="radio-card-content">
               <div class="radio-card-title">Crítico</div>
-              <div class="radio-card-desc">Cero tolerancia — producción, misión crítica, transacciones en tiempo real</div>
+              <div class="radio-card-desc">Cero tolerancia — producción 24/7, misión crítica, tiempo real</div>
             </div>
           </label>
         </div>
       </div>
-
       <div class="error-msg" id="err-avail" style="margin-top:12px;">Selecciona un nivel de disponibilidad</div>
-
       <div class="nav-buttons">
         <button class="btn btn-ghost" onclick="prevStep(5)">‹ Atrás</button>
         <button class="btn btn-primary" onclick="nextStep(5)">Continuar <span class="btn-icon">›</span></button>
       </div>
     </div>
 
-    <!-- Step 6 — Presupuesto -->
+    <!-- Paso 6 — Presupuesto -->
     <div class="step-card" id="step-6">
       <div class="corner-deco"></div>
       <div class="step-number">Paso 06 / 06</div>
       <div class="step-title">Presupuesto aproximado</div>
-      <div class="step-subtitle">Marco de inversión que el cliente tiene disponible</div>
-
+      <div class="step-subtitle">Marco de inversión disponible del cliente</div>
       <div class="radio-cards">
         <div class="radio-card">
           <input type="radio" name="budget" id="budget-low" value="low" />
@@ -974,7 +556,7 @@
             <div class="radio-indicator"></div>
             <div class="radio-card-content">
               <div class="radio-card-title">Bajo</div>
-              <div class="radio-card-desc">Prioridad en costo — busca la mayor capacidad por menor inversión</div>
+              <div class="radio-card-desc">Prioridad en costo — máxima capacidad por menor inversión inicial</div>
             </div>
           </label>
         </div>
@@ -984,7 +566,7 @@
             <div class="radio-indicator"></div>
             <div class="radio-card-content">
               <div class="radio-card-title">Medio</div>
-              <div class="radio-card-desc">Balance entre performance, redundancia y costo total</div>
+              <div class="radio-card-desc">Balance entre performance, redundancia y costo total de propiedad</div>
             </div>
           </label>
         </div>
@@ -994,46 +576,38 @@
             <div class="radio-indicator"></div>
             <div class="radio-card-content">
               <div class="radio-card-title">Alto</div>
-              <div class="radio-card-desc">Prioridad en performance y resiliencia — solución enterprise de primer nivel</div>
+              <div class="radio-card-desc">Prioridad en performance y resiliencia — solución IBM enterprise de primer nivel</div>
             </div>
           </label>
         </div>
       </div>
-
       <div class="error-msg" id="err-budget" style="margin-top:12px;">Selecciona un rango de presupuesto</div>
-
       <div class="nav-buttons">
         <button class="btn btn-ghost" onclick="prevStep(6)">‹ Atrás</button>
-        <button class="btn btn-primary" id="btn-analyze" onclick="runAnalysis()">
-          Analizar y Recomendar <span class="btn-icon">&#9658;</span>
-        </button>
+        <button class="btn btn-primary" onclick="runAnalysis()">Analizar y Recomendar <span class="btn-icon">&#9658;</span></button>
       </div>
     </div>
 
   </div><!-- /wizard-container -->
 
-  <!-- ── Processing indicator ── -->
-  <div class="processing" id="processing">
-    &#9632; Procesando parámetros... generando recomendación
-  </div>
+  <div class="processing" id="processing">&#9632; Procesando parámetros... generando recomendación IBM Storage</div>
 
   <!-- ── RESULTS ── -->
   <div id="results-section">
 
     <div class="results-header">
-      <div class="results-title">&#9632; Análisis completado</div>
-      <div class="results-headline">Recomendación de Storage</div>
-      <div class="results-sub" id="results-sub">Basada en los parámetros ingresados para este cliente</div>
+      <div class="results-title">&#9632; Análisis completado — Portfolio IBM Storage</div>
+      <div class="results-headline">Recomendación de Solución IBM</div>
+      <div class="results-sub" id="results-sub"></div>
     </div>
 
-    <!-- Projection band -->
     <div class="projection-band">
       <div class="proj-stat">
         <div class="proj-label">Capacidad actual</div>
         <div class="proj-value" id="proj-current">—<span>TB</span></div>
       </div>
       <div class="proj-stat">
-        <div class="proj-label">Proyección a 3 años</div>
+        <div class="proj-label">Proyección 3 años</div>
         <div class="proj-value" id="proj-3y">—<span>TB</span></div>
       </div>
       <div class="proj-stat">
@@ -1041,21 +615,18 @@
         <div class="proj-value" id="proj-growth">—<span>%</span></div>
       </div>
       <div class="proj-stat">
-        <div class="proj-label">Capacidad recomendada</div>
+        <div class="proj-label">Cap. recomendada (+30% buffer)</div>
         <div class="proj-value" id="proj-rec">—<span>TB</span></div>
       </div>
     </div>
 
-    <!-- Cards container -->
     <div id="cards-container"></div>
 
-    <!-- Summary -->
     <div class="summary-section">
       <div class="summary-title">&#9632; Resumen de datos ingresados</div>
       <div class="summary-grid" id="summary-grid"></div>
     </div>
 
-    <!-- Actions -->
     <div class="action-bar no-print">
       <button class="btn btn-primary" onclick="newSimulation()">&#8635; Nueva simulación</button>
       <button class="btn btn-secondary" onclick="exportPDF()">&#9113; Exportar como PDF</button>
@@ -1066,58 +637,88 @@
 </div><!-- /app -->
 
 <script>
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 //  STATE
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 const state = {
-  servers: null,
-  currentTB: null,
-  growthPct: null,
-  loads: [],
-  availability: null,
-  budget: null
+  servers: null, currentTB: null, growthPct: null,
+  loads: [], availability: null, budget: null
 };
-
 const TOTAL_STEPS = 6;
 let currentStep = 1;
 
-// ═══════════════════════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+//  IBM STORAGE PORTFOLIO
+//  Cinco plataformas que cubren entry → enterprise
+// ═══════════════════════════════════════════════════
+const IBM_SOLUTIONS = {
+
+  fs5300: {
+    name: 'IBM FlashSystem 5300',
+    tier: 'Entry-Level All-Flash Array',
+    family: 'IBM FlashSystem',
+    tagline: 'Entry all-flash · hasta ~1 PB efectivo · iSCSI / FC / NVMe-oF'
+  },
+
+  fs7300: {
+    name: 'IBM FlashSystem 7300',
+    tier: 'Mid-Range All-Flash Array',
+    family: 'IBM FlashSystem',
+    tagline: 'Mid-range all-flash · hasta ~4 PB efectivo · NVMe-oF / FC / iSCSI'
+  },
+
+  fs9500: {
+    name: 'IBM FlashSystem 9500',
+    tier: 'Enterprise All-Flash Array',
+    family: 'IBM FlashSystem',
+    tagline: 'Enterprise all-flash · hasta ~32 PB efectivo · NVMe-oF / FC / iSCSI'
+  },
+
+  sv5100: {
+    name: 'IBM Storage Virtualize (SV5100)',
+    tier: 'Híbrido Flash + HDD — Virtualización de Storage',
+    family: 'IBM Storwize / Storage Virtualize',
+    tagline: 'Hybrid flash/HDD · tiering automático · hasta ~2 PB · FC / iSCSI / NFS / SMB'
+  },
+
+  ibmcos: {
+    name: 'IBM Storage Scale / Cloud Object Storage',
+    tier: 'Object Storage — Backup, Archivo y Datos No Estructurados',
+    family: 'IBM Storage Scale',
+    tagline: 'Escala masiva · petabytes · S3 / NFS / SMB · ideal backup y archivo frío'
+  }
+};
+
+// ═══════════════════════════════════════════════════
+//  INIT — progress dots
+// ═══════════════════════════════════════════════════
 (function init() {
-  const dotsContainer = document.getElementById('steps-dots');
+  const c = document.getElementById('steps-dots');
   for (let i = 1; i <= TOTAL_STEPS; i++) {
     const d = document.createElement('div');
     d.className = 'step-dot' + (i === 1 ? ' active' : '');
     d.id = 'dot-' + i;
-    dotsContainer.appendChild(d);
+    c.appendChild(d);
   }
   updateProgress(1);
 })();
 
-// ═══════════════════════════════════════════════════════════
-//  PROGRESS
-// ═══════════════════════════════════════════════════════════
 function updateProgress(step) {
-  const pct = ((step - 1) / TOTAL_STEPS) * 100;
-  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-fill').style.width = (((step - 1) / TOTAL_STEPS) * 100) + '%';
   document.getElementById('progress-counter').textContent = `Paso ${step} de ${TOTAL_STEPS}`;
   for (let i = 1; i <= TOTAL_STEPS; i++) {
-    const dot = document.getElementById('dot-' + i);
-    dot.className = 'step-dot';
-    if (i < step)  dot.classList.add('done');
-    if (i === step) dot.classList.add('active');
+    const d = document.getElementById('dot-' + i);
+    d.className = 'step-dot' + (i < step ? ' done' : i === step ? ' active' : '');
   }
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 //  NAVIGATION
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 function showStep(n) {
   document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
   const card = document.getElementById('step-' + n);
   card.classList.add('active');
-  // re-trigger animation
   card.style.animation = 'none';
   requestAnimationFrame(() => { card.style.animation = ''; });
   currentStep = n;
@@ -1125,19 +726,17 @@ function showStep(n) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function prevStep(from) {
-  if (from > 1) showStep(from - 1);
-}
+function prevStep(from) { if (from > 1) showStep(from - 1); }
 
 function nextStep(from) {
   if (!validateStep(from)) return;
   collectStep(from);
-  if (from < TOTAL_STEPS) showStep(from + 1);
+  showStep(from + 1);
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 //  VALIDATION
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 function showErr(id, show) {
   const el = document.getElementById(id);
   if (el) el.classList.toggle('show', show);
@@ -1145,330 +744,308 @@ function showErr(id, show) {
 
 function validateStep(step) {
   let ok = true;
-  if (step === 1) {
-    const v = parseInt(document.getElementById('num-servers').value);
-    ok = !isNaN(v) && v > 0;
-    showErr('err-servers', !ok);
-  }
-  if (step === 2) {
-    const v = parseFloat(document.getElementById('current-tb').value);
-    ok = !isNaN(v) && v > 0;
-    showErr('err-tb', !ok);
-  }
-  if (step === 3) {
-    const v = parseFloat(document.getElementById('growth-pct').value);
-    ok = !isNaN(v) && v >= 0 && v <= 500;
-    showErr('err-growth', !ok);
-  }
-  if (step === 4) {
-    const checks = document.querySelectorAll('#step-4 input[type="checkbox"]:checked');
-    ok = checks.length > 0;
-    showErr('err-load', !ok);
-  }
-  if (step === 5) {
-    const sel = document.querySelector('input[name="avail"]:checked');
-    ok = !!sel;
-    showErr('err-avail', !ok);
-  }
-  if (step === 6) {
-    const sel = document.querySelector('input[name="budget"]:checked');
-    ok = !!sel;
-    showErr('err-budget', !ok);
-  }
+  if (step === 1) { const v = parseInt(document.getElementById('num-servers').value); ok = !isNaN(v) && v > 0; showErr('err-servers', !ok); }
+  if (step === 2) { const v = parseFloat(document.getElementById('current-tb').value); ok = !isNaN(v) && v > 0; showErr('err-tb', !ok); }
+  if (step === 3) { const v = parseFloat(document.getElementById('growth-pct').value); ok = !isNaN(v) && v >= 0 && v <= 500; showErr('err-growth', !ok); }
+  if (step === 4) { ok = document.querySelectorAll('#step-4 input[type="checkbox"]:checked').length > 0; showErr('err-load', !ok); }
+  if (step === 5) { ok = !!document.querySelector('input[name="avail"]:checked'); showErr('err-avail', !ok); }
+  if (step === 6) { ok = !!document.querySelector('input[name="budget"]:checked'); showErr('err-budget', !ok); }
   return ok;
 }
 
-// ═══════════════════════════════════════════════════════════
-//  COLLECT STATE
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+//  COLLECT
+// ═══════════════════════════════════════════════════
 function collectStep(step) {
-  if (step === 1) state.servers  = parseInt(document.getElementById('num-servers').value);
-  if (step === 2) state.currentTB = parseFloat(document.getElementById('current-tb').value);
-  if (step === 3) state.growthPct = parseFloat(document.getElementById('growth-pct').value);
-  if (step === 4) {
-    state.loads = Array.from(document.querySelectorAll('#step-4 input[type="checkbox"]:checked'))
-                       .map(c => c.value);
-  }
+  if (step === 1) state.servers    = parseInt(document.getElementById('num-servers').value);
+  if (step === 2) state.currentTB  = parseFloat(document.getElementById('current-tb').value);
+  if (step === 3) state.growthPct  = parseFloat(document.getElementById('growth-pct').value);
+  if (step === 4) state.loads      = Array.from(document.querySelectorAll('#step-4 input[type="checkbox"]:checked')).map(c => c.value);
   if (step === 5) state.availability = document.querySelector('input[name="avail"]:checked').value;
-  if (step === 6) state.budget = document.querySelector('input[name="budget"]:checked').value;
+  if (step === 6) state.budget     = document.querySelector('input[name="budget"]:checked').value;
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 //  RUN ANALYSIS
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 function runAnalysis() {
   if (!validateStep(6)) return;
   collectStep(6);
-
-  // Hide wizard, show processing
   document.getElementById('wizard-container').style.display = 'none';
-  document.getElementById('progress-wrap').style.display = 'none';
+  document.getElementById('progress-wrap').style.display    = 'none';
   const proc = document.getElementById('processing');
   proc.classList.add('show');
-
   setTimeout(() => {
     proc.classList.remove('show');
     buildResults();
     document.getElementById('results-section').classList.add('show');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, 1400);
+  }, 1500);
 }
 
-// ═══════════════════════════════════════════════════════════
-//  RECOMMENDATION ENGINE
-// ═══════════════════════════════════════════════════════════
-
-const SOLUTIONS = {
-  flashsystem: {
-    name: 'IBM FlashSystem',
-    model: 'IBM FlashSystem 5200 / 7300',
-    tier: 'Enterprise All-Flash'
-  },
-  storwize: {
-    name: 'IBM Storwize',
-    model: 'IBM Storwize V5100 / V7000',
-    tier: 'Enterprise Hybrid Flash'
-  },
-  hpe_msa: {
-    name: 'HPE MSA',
-    model: 'HPE MSA 2060 / 2062',
-    tier: 'Mid-Range SAN/NAS'
-  },
-  lenovo_de: {
-    name: 'Lenovo ThinkSystem DE',
-    model: 'Lenovo ThinkSystem DE4000H / DE6000H',
-    tier: 'Mid-Range Hybrid SAN'
-  },
-  synology: {
-    name: 'Synology',
-    model: 'Synology RS3621xs+ / UC3200',
-    tier: 'NAS / Backup Appliance'
-  }
-};
-
+// ═══════════════════════════════════════════════════
+//  SCORING ENGINE — IBM Storage exclusivo
+//
+//  Lógica por capas:
+//  1. Workload fit
+//  2. Availability tier
+//  3. Budget filter
+//  4. Scale / TB fit
+// ═══════════════════════════════════════════════════
 function scoreRecommendations() {
-  const { loads, availability, budget, growthPct } = state;
+  const { loads, availability, budget, growthPct, currentTB } = state;
+
+  const hasDB     = loads.includes('db');
+  const hasVMs    = loads.includes('vms');
+  const hasBackup = loads.includes('backup');
+  const hasFiles  = loads.includes('files');
+
+  const isCritical = availability === 'critical';
+  const isMedium   = availability === 'medium';
+  const isBasic    = availability === 'basic';
+
+  const isLow      = budget === 'low';
+  const isMidBudget= budget === 'medium';
+  const isHigh     = budget === 'high';
+
+  const proj3y  = currentTB * Math.pow(1 + growthPct / 100, 3);
+  const highGrowth = growthPct >= 30;
+  const largeScale = proj3y > 500;   // >500 TB proyectados
+  const hugeScale  = proj3y > 2000;  // >2 PB proyectados
+
+  const s = { fs5300: 0, fs7300: 0, fs9500: 0, sv5100: 0, ibmcos: 0 };
+
+  // ── 1. Workload ──
+  // Bases de datos: all-flash siempre; crítico → 9500, medio → 7300, básico → 5300
+  if (hasDB) {
+    if (isCritical)  { s.fs9500 += 50; s.fs7300 += 30; }
+    else if (isMedium){ s.fs7300 += 45; s.fs9500 += 20; s.fs5300 += 15; }
+    else              { s.fs5300 += 35; s.fs7300 += 20; }
+  }
+
+  // VMs: all-flash óptimo; escala define el tier
+  if (hasVMs) {
+    if (isCritical)   { s.fs9500 += 45; s.fs7300 += 25; }
+    else if (isMedium){ s.fs7300 += 40; s.fs5300 += 20; s.sv5100 += 10; }
+    else              { s.fs5300 += 30; s.sv5100 += 20; }
+  }
+
+  // Backup masivo: SV5100 (híbrido) o IBM COS para escala
+  if (hasBackup) {
+    s.ibmcos += 35; s.sv5100 += 30;
+    if (isLow)   { s.ibmcos += 15; s.sv5100 += 10; }
+    if (hugeScale){ s.ibmcos += 20; }
+  }
+
+  // Archivos / NAS: SV5100 (NFS/SMB nativos) o COS para archivo masivo
+  if (hasFiles) {
+    s.sv5100 += 30; s.ibmcos += 20;
+    if (isLow)    { s.ibmcos += 10; }
+    if (isCritical){ s.fs7300 += 15; s.sv5100 += 10; }
+  }
+
+  // ── 2. Disponibilidad ──
+  if (isCritical) { s.fs9500 += 30; s.fs7300 += 15; }
+  if (isMedium)   { s.fs7300 += 20; s.sv5100 += 10; }
+  if (isBasic)    { s.sv5100 += 15; s.ibmcos += 10; s.fs5300 += 10; }
+
+  // ── 3. Budget ──
+  if (isHigh)     { s.fs9500 += 25; s.fs7300 += 10; }
+  if (isMidBudget){ s.fs7300 += 20; s.sv5100 += 15; s.fs5300 += 10; }
+  if (isLow)      { s.sv5100 += 25; s.ibmcos += 20; s.fs5300 += 15; }
+
+  // ── 4. Escala / TB ──
+  if (hugeScale)  { s.fs9500 += 20; s.ibmcos += 25; }
+  if (largeScale && !hugeScale) { s.fs9500 += 10; s.fs7300 += 15; s.sv5100 += 10; }
+  if (!largeScale && !isHigh)   { s.fs5300 += 10; }
+  if (highGrowth && isHigh)     { s.fs9500 += 15; }
+  if (highGrowth && isMidBudget){ s.fs7300 += 12; }
+
+  // ── Asegurar baselines coherentes ──
+  s.fs5300 = Math.max(s.fs5300, 5);
+  s.fs7300 = Math.max(s.fs7300, 5);
+  s.sv5100 = Math.max(s.sv5100, hasBackup || hasFiles ? 15 : 5);
+  s.ibmcos = Math.max(s.ibmcos, hasBackup ? 15 : 5);
+
+  // Tomar top 3 por score
+  return Object.entries(s)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([key]) => key);
+}
+
+// ═══════════════════════════════════════════════════
+//  WHY-TEXT — personalizado por solución y contexto
+// ═══════════════════════════════════════════════════
+function buildWhyText(key) {
+  const { loads, availability, budget, servers, growthPct, currentTB } = state;
   const hasDB     = loads.includes('db');
   const hasVMs    = loads.includes('vms');
   const hasBackup = loads.includes('backup');
   const hasFiles  = loads.includes('files');
   const isCritical = availability === 'critical';
   const isMedium   = availability === 'medium';
-  const isLow      = budget === 'low';
-  const isMidBudget= budget === 'medium';
-  const isHighBudget = budget === 'high';
-  const highGrowth = growthPct >= 30;
+  const proj3y = Math.ceil(currentTB * Math.pow(1 + growthPct / 100, 3));
 
-  const scores = {
-    flashsystem: 0,
-    storwize:    0,
-    hpe_msa:     0,
-    lenovo_de:   0,
-    synology:    0
-  };
+  const texts = {
 
-  // ── Core rules ──
+    fs5300: [
+      `El IBM FlashSystem 5300 es el punto de entrada al portfolio all-flash de IBM, diseñado para entornos de hasta ${servers} servidores que necesitan performance NVMe sin la complejidad de plataformas enterprise más grandes.`,
+      hasVMs
+        ? `Soporta cargas de virtualización VMware y Microsoft Hyper-V con latencias de menos de 200 µs, ofreciendo el salto de calidad de HDD a all-flash al menor costo de inversión inicial del portfolio IBM.`
+        : `Sus capacidades de compresión y deduplicación en línea permiten reducir el footprint real de datos, optimizando el costo por TB efectivo almacenado.`,
+      `Con una proyección a 3 años de ${proj3y} TB, el FlashSystem 5300 permite crecer de forma no disruptiva agregando drives, con soporte para IBM Storage Virtualize para evolucionar hacia el 7300 o 9500 sin migración de datos.`
+    ],
 
-  // Carga crítica + disponibilidad crítica → IBM FlashSystem primero
-  if (isCritical && (hasDB || hasVMs)) { scores.flashsystem += 40; }
-  if (isCritical) { scores.flashsystem += 20; scores.storwize += 15; }
-
-  // Backup pesado + presupuesto bajo → Synology primero
-  if (hasBackup && isLow) { scores.synology += 40; }
-  if (hasBackup && hasFiles && isLow) { scores.synology += 10; }
-
-  // VMs + crecimiento alto + presupuesto medio → Lenovo DE o HPE MSA
-  if (hasVMs && highGrowth && isMidBudget) { scores.lenovo_de += 30; scores.hpe_msa += 25; }
-  if (hasVMs && isMidBudget) { scores.lenovo_de += 15; scores.hpe_msa += 12; }
-
-  // Bases de datos + disponibilidad crítica → FlashSystem o Storwize
-  if (hasDB && isCritical) { scores.flashsystem += 30; scores.storwize += 20; }
-  if (hasDB && isMedium)   { scores.storwize += 20; scores.hpe_msa += 10; }
-
-  // Archivos + presupuesto bajo/medio → Synology
-  if (hasFiles && isLow)      { scores.synology += 25; }
-  if (hasFiles && isMidBudget){ scores.synology += 10; scores.hpe_msa += 10; }
-
-  // Budget filters
-  if (isHighBudget) { scores.flashsystem += 18; scores.storwize += 12; }
-  if (isLow)        { scores.synology += 15; scores.hpe_msa += 5; }
-
-  // High growth general
-  if (highGrowth && !isLow)   { scores.flashsystem += 10; scores.lenovo_de += 8; }
-
-  // VMs general
-  if (hasVMs && isHighBudget) { scores.flashsystem += 12; }
-  if (hasVMs && !isLow)       { scores.hpe_msa += 8; }
-
-  // Minimum baseline so every solution can appear
-  scores.synology   = Math.max(scores.synology, hasBackup || hasFiles ? 20 : 5);
-  scores.hpe_msa    = Math.max(scores.hpe_msa, 10);
-  scores.lenovo_de  = Math.max(scores.lenovo_de, 8);
-  scores.storwize   = Math.max(scores.storwize, isCritical ? 15 : 5);
-  scores.flashsystem= Math.max(scores.flashsystem, isCritical ? 20 : 8);
-
-  const sorted = Object.entries(scores)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3)
-    .map(([key]) => key);
-
-  return sorted;
-}
-
-function buildWhyText(key) {
-  const { loads, availability, budget, servers, growthPct } = state;
-  const hasDB     = loads.includes('db');
-  const hasVMs    = loads.includes('vms');
-  const hasBackup = loads.includes('backup');
-  const hasFiles  = loads.includes('files');
-  const isCritical = availability === 'critical';
-
-  const reasons = {
-    flashsystem: [
+    fs7300: [
+      `El IBM FlashSystem 7300 es la plataforma mid-range all-flash de IBM, ideal para los ${servers} servidores de este entorno con cargas mixtas${hasDB ? ' de bases de datos' : ''}${hasVMs ? ' y virtualización' : ''} que demandan consistencia de baja latencia.`,
       isCritical
-        ? `Con un nivel de disponibilidad crítico y ${servers} servidores activos, el IBM FlashSystem garantiza latencias sub-milisegundo y arquitectura Active-Active sin punto único de falla.`
-        : `El IBM FlashSystem ofrece la mayor densidad de performance para entornos exigentes, con NVMe end-to-end y compresión en línea que optimiza el costo por TB efectivo.`,
+        ? `Sus controladores duales activo-activo y las opciones de replicación síncrona con IBM HyperSwap garantizan continuidad operativa ante fallas de sitio, cubriendo el nivel de disponibilidad crítico requerido.`
+        : `Integra IBM Storage Insights Pro para monitoreo predictivo con inteligencia artificial, anticipando cuellos de botella antes de que impacten en producción.`,
+      `Con NVMe-oF end-to-end y soporte para FC, iSCSI y NVMe over RoCE, el FlashSystem 7300 cubre todos los protocolos que los ${servers} servidores puedan requerir, con escalabilidad hasta ~4 PB efectivos.`
+    ],
+
+    fs9500: [
+      `El IBM FlashSystem 9500 es la plataforma all-flash de mayor escala del portfolio IBM, diseñada para entornos enterprise${isCritical ? ' de misión crítica' : ' exigentes'} con cero tolerancia a interrupciones y alta densidad de workloads.`,
       hasDB
-        ? `Las cargas de bases de datos se benefician del cache inteligente y los 99.9999% de disponibilidad garantizados por sus controladores redundantes de alta velocidad.`
-        : `La arquitectura todo-flash acelera las cargas de VMs y reduce el cuellos de botella de I/O para todos los workloads conectados.`,
-      `Con un crecimiento estimado de ${growthPct}% anual, la escalabilidad no disruptiva del FlashSystem permite crecer sin downtime ni re-configuración del entorno.`
+        ? `Para cargas de bases de datos${isCritical ? ' críticas' : ''}, ofrece latencias sub-100 µs con NVMe-oF, QoS granular por volumen y compresión adaptativa que maximiza el aprovechamiento efectivo de capacidad.`
+        : `Su arquitectura NVMe end-to-end entrega el máximo throughput para cargas intensivas, con tiering inteligente y deduplicación en línea que pueden reducir el almacenamiento físico requerido hasta un 5:1.`,
+      `Soporta escalabilidad hasta 32 PB efectivos, IBM Metro Mirror y Global Mirror para replicación multi-sitio, y se integra nativamente con IBM Spectrum Protect para una estrategia de protección de datos completa.`
     ],
-    storwize: [
-      `El IBM Storwize combina capacidad híbrida flash/HDD con inteligencia de tiering automático — ideal para ambientes con múltiples tipos de workload como los ingresados.`,
-      isCritical
-        ? `Sus controladores en cluster y las opciones de replicación síncrona/asíncrona cubren los requisitos de alta disponibilidad declarados, con recuperación automática ante fallos.`
-        : `Ofrece un punto de entrada accesible a la tecnología IBM con soporte para VMware, IBM Spectrum Virtualize y múltiples protocolos (iSCSI, FC, NFS, SMB).`,
-      `Con ${servers} servidores y proyección de crecimiento, el Storwize permite expandir capacidad en caliente agregando drives o shelves sin interrumpir operaciones.`
-    ],
-    hpe_msa: [
-      `El HPE MSA 2060/2062 es una plataforma SAN/NAS entry-to-mid range con excelente relación performance/costo, especialmente optimizada para entornos con VMs y archivos.`,
-      `Su soporte nativo para VMware vSphere, Microsoft Hyper-V y cargas de archivos SMB/NFS lo hace una opción sólida para los workloads indicados en el relevamiento.`,
-      `La gestión centralizada HPE InfoSight simplifica el monitoreo y permite identificar cuellos de botella proactivamente — relevante con ${servers} servidores conectados.`
-    ],
-    lenovo_de: [
-      `El Lenovo ThinkSystem DE6000H es una plataforma SAN híbrida de alto rendimiento, ideal para entornos de virtualización con crecimiento sostenido como el proyectado (${growthPct}% anual).`,
-      `Su integración nativa con servidores Lenovo ThinkSystem y soporte multiprotocolo (iSCSI, FC, iSER) permite construir una infraestructura convergente y simplificada.`,
-      `La arquitectura dual-controller activo-activo del DE Series asegura continuidad operativa y permite escalar capacidad de forma no disruptiva conforme crecen los datos.`
-    ],
-    synology: [
+
+    sv5100: [
+      `El IBM Storage Virtualize (SV5100) combina flash de caché de alta velocidad con capacidad HDD de alta densidad, aplicando tiering automático para que los datos calientes siempre estén en flash y los fríos en HDD.`,
       hasBackup
-        ? `Para cargas primarias de backup y archivo, el Synology ofrece la mayor capacidad por dólar del mercado, con soporte para Synology Active Backup for Business sin licencias adicionales.`
-        : `El Synology RS Series es una opción eficiente para almacenamiento de archivos y backups secundarios, con una interfaz de gestión sencilla y bajo costo operativo.`,
-      `Compatible con los principales software de backup (Veeam, Commvault, Veritas) como destino NAS, y con soporte nativo para NFS/SMB para entornos mixtos Windows/Linux.`,
-      `El TCO a 3 años es significativamente menor comparado con soluciones enterprise, sin sacrificar la protección de datos con RAID 5/6/10 y snapshots automáticos programables.`
+        ? `Para cargas de backup es especialmente eficiente: su motor de deduplicación y compresión reduce significativamente el espacio físico requerido, con soporte nativo para IBM Spectrum Protect y Veeam como repositorio de backup.`
+        : `Soporta NFS, SMB, iSCSI y Fibre Channel de forma nativa, siendo la plataforma del portfolio IBM más versátil para entornos con múltiples tipos de carga y workloads mixtos.`,
+      `La virtualización de storage integrada permite federar arrays IBM existentes bajo una sola interfaz de gestión, reduciendo la complejidad operativa para los ${servers} servidores del entorno.`
+    ],
+
+    ibmcos: [
+      `IBM Storage Scale / Cloud Object Storage es la solución del portfolio IBM para almacenamiento masivo de datos no estructurados, con escalabilidad hasta petabytes sin límite práctico de capacidad.`,
+      hasBackup
+        ? `Para repositorios de backup a gran escala, IBM COS ofrece la mejor relación TB/costo del portfolio IBM, con policies de ciclo de vida automatizadas que mueven datos automáticamente entre tiers caliente, tibio y frío.`
+        : `Compatible con protocolo S3, NFS y SMB, se integra con las principales herramientas de gestión de datos y permite servir como repositorio central para archivos y datos de largo plazo.`,
+      `Con una proyección de ${proj3y} TB a 3 años, la arquitectura de escala horizontal de IBM COS crece agregando nodos sin downtime, sin necesidad de migraciones ni re-balanceo manual de datos.`
     ]
   };
 
-  return reasons[key] || [];
+  return texts[key] || [];
 }
 
+// ═══════════════════════════════════════════════════
+//  SPECS — basadas en la solución y el dimensionamiento
+// ═══════════════════════════════════════════════════
 function buildSpecs(key) {
-  const { currentTB, growthPct, loads, availability } = state;
+  const { currentTB, growthPct, availability } = state;
   const proj3y = currentTB * Math.pow(1 + growthPct / 100, 3);
   const recCap = Math.ceil(proj3y * 1.3);
   const isCritical = availability === 'critical';
-  const raid = isCritical ? 'RAID 6 / RAID-DP' : 'RAID 5 / RAID 6';
 
-  const specMap = {
-    flashsystem: [
-      { key: 'Capacidad efectiva', val: `${recCap} TB (estimado)` },
-      { key: 'Tipo de drive',      val: 'NVMe SSD / Flash' },
-      { key: 'RAID / Protección',  val: 'RAID 5/6 + DDP' },
-      { key: 'Redundancia',        val: 'Dual controller AA' },
-      { key: 'Protocolos',         val: 'FC, iSCSI, NVMe-oF' },
-      { key: 'Disponibilidad',     val: '99.9999%' }
+  const map = {
+    fs5300: [
+      { key: 'Capacidad sugerida',  val: `${recCap} TB (efectivo)` },
+      { key: 'Tipo de drive',       val: 'NVMe Flash (SSD)' },
+      { key: 'RAID / Protección',   val: 'RAID 5 / RAID 6' },
+      { key: 'Redundancia',         val: 'Dual controller AA' },
+      { key: 'Protocolos',          val: 'iSCSI, FC, NVMe-oF' },
+      { key: 'Latencia típica',     val: '< 200 µs' },
+      { key: 'Disponibilidad',      val: '99.9999%' },
+      { key: 'Escalabilidad máx.',  val: '~1 PB efectivo' }
     ],
-    storwize: [
-      { key: 'Capacidad efectiva', val: `${recCap} TB (estimado)` },
-      { key: 'Tipo de drive',      val: 'SSD + SAS HDD tiering' },
-      { key: 'RAID / Protección',  val: raid },
-      { key: 'Redundancia',        val: 'Dual controller AA' },
-      { key: 'Protocolos',         val: 'FC, iSCSI, NFS, SMB' },
-      { key: 'Disponibilidad',     val: '99.999%' }
+    fs7300: [
+      { key: 'Capacidad sugerida',  val: `${recCap} TB (efectivo)` },
+      { key: 'Tipo de drive',       val: 'NVMe Flash (SSD)' },
+      { key: 'RAID / Protección',   val: isCritical ? 'RAID 6 + HyperSwap' : 'RAID 5 / RAID 6' },
+      { key: 'Redundancia',         val: 'Dual controller AA' },
+      { key: 'Protocolos',          val: 'FC, iSCSI, NVMe-oF, RoCE' },
+      { key: 'Latencia típica',     val: '< 150 µs' },
+      { key: 'Disponibilidad',      val: '99.9999%' },
+      { key: 'Escalabilidad máx.',  val: '~4 PB efectivo' }
     ],
-    hpe_msa: [
-      { key: 'Capacidad efectiva', val: `${recCap} TB (estimado)` },
-      { key: 'Tipo de drive',      val: 'SSD + SAS/SATA HDD' },
-      { key: 'RAID / Protección',  val: raid },
-      { key: 'Redundancia',        val: 'Dual controller AA' },
-      { key: 'Protocolos',         val: 'FC, iSCSI, SAS' },
-      { key: 'Disponibilidad',     val: '99.99%' }
+    fs9500: [
+      { key: 'Capacidad sugerida',  val: `${recCap} TB (efectivo)` },
+      { key: 'Tipo de drive',       val: 'NVMe Flash (SCM + QLC)' },
+      { key: 'RAID / Protección',   val: 'RAID 5/6 + Repl. síncrona' },
+      { key: 'Redundancia',         val: 'Dual controller AA + Metro Mirror' },
+      { key: 'Protocolos',          val: 'FC, iSCSI, NVMe-oF, FCoE' },
+      { key: 'Latencia típica',     val: '< 100 µs' },
+      { key: 'Disponibilidad',      val: '99.9999%' },
+      { key: 'Escalabilidad máx.',  val: '~32 PB efectivo' }
     ],
-    lenovo_de: [
-      { key: 'Capacidad efectiva', val: `${recCap} TB (estimado)` },
-      { key: 'Tipo de drive',      val: 'SSD + SAS HDD' },
-      { key: 'RAID / Protección',  val: raid },
-      { key: 'Redundancia',        val: 'Dual controller AA' },
-      { key: 'Protocolos',         val: 'iSCSI, FC, iSER' },
-      { key: 'Disponibilidad',     val: '99.99%' }
+    sv5100: [
+      { key: 'Capacidad sugerida',  val: `${recCap} TB (efectivo)` },
+      { key: 'Tipo de drive',       val: 'SSD cache + SAS/SATA HDD' },
+      { key: 'RAID / Protección',   val: 'RAID 5 / RAID 6 + Easy Tier' },
+      { key: 'Redundancia',         val: 'Dual controller AA' },
+      { key: 'Protocolos',          val: 'FC, iSCSI, NFS, SMB, FCoE' },
+      { key: 'Tiering automático',  val: 'SSD / SAS / SATA / Cloud' },
+      { key: 'Disponibilidad',      val: '99.999%' },
+      { key: 'Escalabilidad máx.',  val: '~2 PB efectivo' }
     ],
-    synology: [
-      { key: 'Capacidad efectiva', val: `${recCap} TB (estimado)` },
-      { key: 'Tipo de drive',      val: 'SAS / SATA HDD + SSD cache' },
-      { key: 'RAID / Protección',  val: 'RAID 5 / RAID 6 / SHR-2' },
-      { key: 'Redundancia',        val: 'HA pair (UC3200)' },
-      { key: 'Protocolos',         val: 'NFS, SMB, iSCSI, AFP' },
-      { key: 'Disponibilidad',     val: '99.9%' }
+    ibmcos: [
+      { key: 'Capacidad sugerida',  val: `${recCap} TB (raw)` },
+      { key: 'Tipo de drive',       val: 'SATA HDD / NVMe cache' },
+      { key: 'RAID / Protección',   val: 'Erasure Coding (configurable)' },
+      { key: 'Redundancia',         val: 'Multi-nodo / Multi-sitio' },
+      { key: 'Protocolos',          val: 'S3, NFS, SMB, HDFS' },
+      { key: 'Ciclo de vida',       val: 'Tiering caliente/tibio/frío' },
+      { key: 'Disponibilidad',      val: '99.999999999% (datos)' },
+      { key: 'Escalabilidad máx.',  val: 'Sin límite (exabytes)' }
     ]
   };
 
-  return specMap[key] || [];
+  return map[key] || [];
 }
 
-// ═══════════════════════════════════════════════════════════
-//  BUILD RESULTS DOM
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+//  BUILD RESULTS
+// ═══════════════════════════════════════════════════
 function buildResults() {
   const { currentTB, growthPct, servers, loads, availability, budget } = state;
 
-  // Projection calculations
   const proj3y = currentTB * Math.pow(1 + growthPct / 100, 3);
   const recCap = Math.ceil(proj3y * 1.3);
 
-  document.getElementById('proj-current').innerHTML = `${formatTB(currentTB)}<span>TB</span>`;
-  document.getElementById('proj-3y').innerHTML      = `${formatTB(proj3y)}<span>TB</span>`;
+  document.getElementById('proj-current').innerHTML = `${fmtTB(currentTB)}<span>TB</span>`;
+  document.getElementById('proj-3y').innerHTML      = `${fmtTB(proj3y)}<span>TB</span>`;
   document.getElementById('proj-growth').innerHTML  = `${growthPct}<span>%</span>`;
-  document.getElementById('proj-rec').innerHTML     = `${recCap}<span>TB</span>`;
+  document.getElementById('proj-rec').innerHTML     = `${fmtTB(recCap)}<span>TB</span>`;
 
-  // Recommendations
   const ranking = scoreRecommendations();
-  const badges  = ['best', 'alt', 'economic'];
-  const badgeLabels = { best: 'Mejor opción', alt: 'Alternativa sólida', economic: 'Opción económica' };
+  const badgeClass  = ['best', 'alt', 'economic'];
+  const badgeLabel  = { best: 'Mejor opción', alt: 'Alternativa sólida', economic: 'Opción económica' };
 
   const container = document.getElementById('cards-container');
   container.innerHTML = '';
 
   ranking.forEach((key, idx) => {
-    const sol   = SOLUTIONS[key];
-    const badge = badges[idx];
+    const sol   = IBM_SOLUTIONS[key];
+    const bc    = badgeClass[idx];
     const whys  = buildWhyText(key);
     const specs = buildSpecs(key);
 
     const card = document.createElement('div');
-    card.className = `result-card ${badge}`;
+    card.className = `result-card ${bc}`;
     card.innerHTML = `
       <div class="card-header">
         <div class="card-title-group">
-          <div class="card-rank">Opción #${idx + 1}</div>
+          <div class="card-rank">Opción #${idx + 1} · ${sol.family}</div>
           <div class="card-name">${sol.name}</div>
-          <div class="card-model">${sol.model} &nbsp;·&nbsp; ${sol.tier}</div>
+          <div class="card-model">${sol.tier}</div>
+          <div class="card-model" style="margin-top:4px;color:var(--blue-light);font-size:10px;letter-spacing:0.1em;">${sol.tagline}</div>
         </div>
-        <div class="badge badge-${badge}">${badgeLabels[badge]}</div>
+        <div class="badge badge-${bc}">${badgeLabel[bc]}</div>
       </div>
       <div class="card-body">
         <div class="card-section">
-          <div class="card-section-label">Por qué encaja</div>
-          <div class="card-why">${whys.map(w => `&#9632; ${w}`).join('<br/><br/>')}</div>
+          <div class="card-section-label">Por qué encaja con este entorno</div>
+          <div class="card-why">${whys.map(w => `&#9632;&nbsp;${w}`).join('<br/><br/>')}</div>
         </div>
         <div class="card-section">
           <div class="card-section-label">Especificaciones sugeridas</div>
           <div class="specs-grid">
-            ${specs.map(s => `
-              <div class="spec-item">
-                <div class="spec-key">${s.key}</div>
-                <div class="spec-val">${s.val}</div>
-              </div>
-            `).join('')}
+            ${specs.map(s => `<div class="spec-item"><div class="spec-key">${s.key}</div><div class="spec-val">${s.val}</div></div>`).join('')}
           </div>
         </div>
       </div>
@@ -1477,66 +1054,53 @@ function buildResults() {
   });
 
   // Summary
-  const availLabels   = { basic: 'Básico', medium: 'Medio', critical: 'Crítico' };
-  const budgetLabels  = { low: 'Bajo', medium: 'Medio', high: 'Alto' };
-  const loadMap       = { vms: 'Máquinas Virtuales', backup: 'Backup/Respaldo', files: 'Archivos/NAS', db: 'Bases de Datos' };
+  const aMap = { basic: 'Básico', medium: 'Medio', critical: 'Crítico' };
+  const bMap = { low: 'Bajo', medium: 'Medio', high: 'Alto' };
+  const lMap = { vms: 'Máquinas Virtuales', backup: 'Backup/Respaldo', files: 'Archivos/NAS', db: 'Bases de Datos' };
 
-  const summaryData = [
-    { key: 'Servidores',         val: servers },
-    { key: 'Datos actuales',     val: `${currentTB} TB` },
-    { key: 'Crecimiento anual',  val: `${growthPct}%` },
-    { key: 'Proyección 3 años',  val: `${formatTB(proj3y)} TB` },
-    { key: 'Tipo de carga',      val: loads.map(l => loadMap[l]).join(', ') },
-    { key: 'Disponibilidad',     val: availLabels[availability] },
-    { key: 'Presupuesto',        val: budgetLabels[budget] }
+  const summaryItems = [
+    { key: 'Servidores',        val: servers },
+    { key: 'Datos actuales',    val: `${currentTB} TB` },
+    { key: 'Crecimiento anual', val: `${growthPct}%` },
+    { key: 'Proyección 3 años', val: `${fmtTB(proj3y)} TB` },
+    { key: 'Cap. recomendada',  val: `${fmtTB(recCap)} TB (+30% buffer)` },
+    { key: 'Tipo de carga',     val: loads.map(l => lMap[l]).join(', ') },
+    { key: 'Disponibilidad',    val: aMap[availability] },
+    { key: 'Presupuesto',       val: bMap[budget] }
   ];
 
-  const sg = document.getElementById('summary-grid');
-  sg.innerHTML = summaryData.map(d => `
-    <div class="summary-item">
-      <div class="summary-key">${d.key}</div>
-      <div class="summary-val">${d.val}</div>
-    </div>
-  `).join('');
+  document.getElementById('summary-grid').innerHTML =
+    summaryItems.map(d => `<div class="summary-item"><div class="summary-key">${d.key}</div><div class="summary-val">${d.val}</div></div>`).join('');
 
-  // Sub-line
   const dateStr = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
   document.getElementById('results-sub').textContent =
-    `${servers} servidores · ${currentTB} TB actuales · Generado el ${dateStr}`;
+    `${servers} servidor${servers !== 1 ? 'es' : ''} · ${currentTB} TB actuales · Portfolio IBM Storage · ${dateStr}`;
 }
 
-function formatTB(n) {
-  if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+function fmtTB(n) {
+  if (n >= 1000) return (n / 1000).toFixed(1) + ' K';
   return Math.ceil(n).toString();
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 //  ACTIONS
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 function newSimulation() {
-  // Reset state
   Object.keys(state).forEach(k => { state[k] = Array.isArray(state[k]) ? [] : null; });
-
-  // Reset inputs
-  document.getElementById('num-servers').value  = '';
-  document.getElementById('current-tb').value   = '';
-  document.getElementById('growth-pct').value   = '';
+  document.getElementById('num-servers').value = '';
+  document.getElementById('current-tb').value  = '';
+  document.getElementById('growth-pct').value  = '';
   document.querySelectorAll('#step-4 input[type="checkbox"]').forEach(c => c.checked = false);
   document.querySelectorAll('input[name="avail"]').forEach(r => r.checked = false);
   document.querySelectorAll('input[name="budget"]').forEach(r => r.checked = false);
-
-  // Hide results, show wizard
   document.getElementById('results-section').classList.remove('show');
   document.getElementById('wizard-container').style.display = '';
-  document.getElementById('progress-wrap').style.display = '';
-
+  document.getElementById('progress-wrap').style.display    = '';
   showStep(1);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function exportPDF() {
-  window.print();
-}
+function exportPDF() { window.print(); }
 </script>
 </body>
 </html>
